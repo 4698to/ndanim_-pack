@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ADSK_CUI>
+    <CUIWindows>
+        <Window name="ND_Animation_Layers" type="T" rank="26" subRank="1" hidden="0" dPanel="1" tabbed="0" curTab="-1" cType="1" toolbarRows="5" toolbarType="3">
+            <FRect left="273" top="179" right="483" bottom="382" />
+            <DRect left="893" top="115" right="1710" bottom="154" />
+            <DRectPref left="2147483647" top="2147483647" right="-2147483648" bottom="-2147483648" />
+            <CurPos left="893" top="115" right="1710" bottom="154" floating="0" panelID="1" />
+            <Items>
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="2053995757" imageID="-1" imageName="" actionID="1" tip="Enable Anim Layers" label="Enable Anim Layers" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="select_anim_layer_node`MAX Script Tools" tip="选择有动画层对象" label="选择动画层" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="2053995757" imageID="-1" imageName="" actionID="10" tip="Select Active Layer Objects" label="Select Active Layer Objects" />
+                <Item typeID="5" type="CTB_OTHER" width="208" height="240" controlID="50612" helpID="0" orientation="19" vertJustif="4" winStyle="1344276755" controlClassName="ComboBox" winText="" />
+                <Item typeID="5" type="CTB_OTHER" width="40" height="21" controlID="50613" helpID="0" orientation="19" vertJustif="-1" winStyle="1342177280" controlClassName="CustEdit" winText="" />
+                <Item typeID="5" type="CTB_OTHER" width="12" height="18" controlID="50614" helpID="0" orientation="19" vertJustif="-1" winStyle="1342177280" controlClassName="SpinnerControl" winText="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="2053995757" imageID="-1" imageName="" actionID="2" tip="Anim Layer Properties" label="Anim Layer Properties" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="2053995757" imageID="-1" imageName="" actionID="3" tip="Add Anim Layer" label="Add Anim Layer" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="collapse_anim_layer_down`MAX Script Tools" tip="以动画层帧为准塌陷" label="塌陷动画层下" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="2053995757" imageID="-1" imageName="" actionID="4" tip="Delete Anim Layer" label="Delete Anim Layer" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="collapse_anim_layer_up`MAX Script Tools" tip="以基础层帧为准塌陷" label="塌陷动画层上" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="2053995757" imageID="-1" imageName="" actionID="5" tip="Cut Anim Layer" label="Cut Anim Layer" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="collapse_anim_layer_up_down`MAX Script Tools" tip="上下层相加" label="塌陷动画层上下相加" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="2053995757" imageID="-1" imageName="" actionID="6" tip="Paste Active Anim Layer" label="Paste Active Anim Layer" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="2053995757" imageID="-1" imageName="" actionID="7" tip="Paste New Layer" label="Paste New Layer" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="collapse_select`MAX Script Tools" tip="塌陷动画" label="塌陷" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="2053995757" imageID="-1" imageName="" actionID="8" tip="Collapse Anim Layer" label="Collapse Anim Layer" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="anim_layer_deletelayer`MAX Script Tools" tip="清理动画层" label="清理动画层" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="2053995757" imageID="-1" imageName="" actionID="9" tip="Disable Anim Layer" label="Disable Anim Layer" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="keys_simplify_curve`MAX Script Tools" tip="自动删帧" label="自动减帧" />
+            </Items>
+        </Window>
+        <Window name="NDTools02" type="T" rank="10" subRank="0" hidden="0" dPanel="4" tabbed="0" curTab="-1" cType="1" toolbarRows="1" toolbarType="12">
+            <FRect left="564" top="218" right="1116" bottom="281" />
+            <DRect left="60" top="154" right="100" bottom="936" />
+            <DRectPref left="2147483647" top="2147483647" right="-2147483648" bottom="-2147483648" />
+            <CurPos left="60" top="154" right="100" bottom="936" floating="0" panelID="4" />
+            <Items>
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="0" imageName="0" actionID="SetSelectFilter_all`MAX Script Tools" tip="过滤选择_all" label="过滤选择_all" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="0" imageName="0" actionID="SetSelectFilter_geometry`MAX Script Tools" tip="过滤选择_Geo" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="0" imageName="0" actionID="SetSelectFilter_helpers`MAX Script Tools" tip="过滤选择_Helps" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="SetSelectFilter_Camera`MAX Script Tools" tip="过滤选择_相机" label="Camera" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="0" imageName="0" actionID="SetSelectFilter_bone`MAX Script Tools" tip="过滤选择_Bone" label="" />
+                <Item typeID="3" type="CTB_SEPARATOR" width="8" height="16" orientation="31" visible="1" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="Tool_coordsys_02`MAX Script Tools" tip="world 坐标系" label="world 坐标系" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="Tool_coordsys_01`MAX Script Tools" tip="Local 坐标系" label="Local 坐标系" />
+                <Item typeID="3" type="CTB_SEPARATOR" width="8" height="16" orientation="31" visible="1" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="Tool_bone_369434754`MAX Script Tools" tip="选择Bone" label="选择Bone" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="Tool_CS_369434754`MAX Script Tools" tip="选择Biped" label="选择Biped" />
+                <Item typeID="3" type="CTB_SEPARATOR" width="8" height="16" orientation="31" visible="1" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="4" imageName="BBToolsOld" actionID="animation_tools`NDTools" tip="动画工具" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="15" imageName="BBToolsTwo" actionID="AnimationToolGroup`NDTools" tip="动画轨迹工具组" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="Tool_rig_01`MAX Script Tools" tip="绑定约束工具组" label="绑定约束工具组" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="5" imageName="BBToolsOld" actionID="CopyAnimation`MAX Script Tools" tip="动画复制工具" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="17" imageName="BBToolsOld" actionID="CopyAnimation_New`MAX Script Tools" tip="暴力帧拷贝黏贴" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="0" imageID="6" imageName="BBToolsOld" actionID="562" tip="保存动画" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="0" imageID="7" imageName="BBToolsOld" actionID="561" tip="读取动画" label="" />
+                <Item typeID="3" type="CTB_SEPARATOR" width="8" height="16" orientation="31" visible="1" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="18" imageName="BBToolsOld" actionID="ClearMissingBipMaps`MAX Script Tools" tip="贴图路径整理" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="0" imageID="8" imageName="BBToolsOld" actionID="40195" tip="合并文件" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="0" imageID="9" imageName="BBToolsOld" actionID="40368" tip="XRef 场景" label="" />
+                
+                <Item typeID="3" type="CTB_SEPARATOR" width="8" height="16" orientation="31" visible="1" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="save_auto_name`MAX Script Tools" tip="另保存" label="保存" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="auto_exportfbx`MAX Script Tools" tip="批量导出FBX" label="自动批量导出FBX" />
+                <Item typeID="3" type="CTB_SEPARATOR" width="8" height="16" orientation="31" visible="1" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="Tool_Security_Essentials`MAX Script Tools" tip="杀毒清理" label="清理" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="helpTool`NDTool" tip="动作组工具文档" label="打开文档页面" />
+            </Items>
+        </Window>
+        <Window name="NDTools01" type="T" rank="26" subRank="0" hidden="0" dPanel="1" tabbed="0" curTab="-1" cType="1" toolbarRows="1" toolbarType="3">
+            <FRect left="183" top="87" right="959" bottom="150" />
+            <DRect left="0" top="115" right="893" bottom="154" />
+            <DRectPref left="2147483647" top="2147483647" right="-2147483648" bottom="-2147483648" />
+            <CurPos left="0" top="115" right="893" bottom="154" floating="0" panelID="1" />
+            <Items>
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="1" imageName="BBToolsTwo" actionID="Skin`Modifiers" tip="Skin Modifier" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="2" imageName="BBToolsTwo" actionID="Symmetry`Modifiers" tip="Symmetry Modifier" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="3" imageName="BBToolsTwo" actionID="Mirror`Modifiers" tip="Mirror Modifier" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="4" imageName="BBToolsTwo" actionID="Uvwmap`Modifiers" tip="Uvwmap Modifier" label="" />
+                <Item typeID="3" type="CTB_SEPARATOR" width="8" height="16" orientation="31" visible="1" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="5" imageName="BBToolsTwo" actionID="Biped`Objects Systems" tip="创建Biped" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="6" imageName="BBToolsTwo" actionID="Bones`Inverse Kinematics" tip="创建Bone" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="7" imageName="BBToolsTwo" actionID="HI_IK`Inverse Kinematics" tip="创建IK" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="9" imageName="BBToolsTwo" actionID="BoneAdjustmentTools`Animation Tools" tip="Bone Tools" label="" />
+                <Item typeID="3" type="CTB_SEPARATOR" width="8" height="16" orientation="31" visible="1" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="11" imageName="BBToolsOld" actionID="AlignTool`MAX Script Tools" tip="AlignTool" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="12" imageName="BBToolsOld" actionID="SpringTools`MAX Script Tools" tip="SpringTools" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="16" imageName="BBToolsOld" actionID="CheckObjForSkin`MAX Script Tools" tip="模型检查修改工具" label="" />
+                <Item typeID="3" type="CTB_SEPARATOR" width="8" height="16" orientation="31" visible="1" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="11" imageName="BBToolsTwo" actionID="cstools`MAX Script Tools" tip="Bip选择工具" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="18" imageName="BBToolsTwo" actionID="AnimationMirror`MAX Script Tools" tip="骨骼动画镜像工具" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="MirrorWeights`MAX Script Tools" tip="蒙皮权重工具" label="蒙皮权重工具" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="17" imageName="BBToolsTwo" actionID="RenameObjects`Tools" tip="物体改名" label="" />
+                <Item typeID="3" type="CTB_SEPARATOR" width="8" height="16" orientation="31" visible="1" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="13" imageName="BBToolsOld" actionID="BoneSpring`NDTools" tip="Bone Spring1.5" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="3" imageName="BBToolsOld" actionID="breakableObj_BB`NDTools" tip="breakableObj" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="RescaleWU`NDTools" tip="角色工具" label="角色工具" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="20" imageName="BBToolsOld" actionID="BatchTool`NDTools" tip="批量工具" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="12" imageName="BBToolsTwo" actionID="CustomScriptDialog`NDTools" tip="自定义工具集合" label="" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="13" imageName="BBToolsTwo" actionID="OpenMaxPath`NDTools" tip="用文件浏览器打开当前MAX档的目录" label="" />
+                <Item typeID="3" type="CTB_SEPARATOR" width="8" height="16" orientation="31" visible="1" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="Tool_show_02`MAX Script Tools" tip="不显示贴图" label="不显示贴图" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="Tool_show_01`MAX Script Tools" tip="显示贴图" label="显示贴图" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="Tool_show_03`MAX Script Tools" tip="显示Shaded模式" label="显示Shaded模式" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="Tool_show_04`MAX Script Tools" tip="显示Clay模式" label="显示Clay模式" />
+                <Item typeID="3" type="CTB_SEPARATOR" width="8" height="16" orientation="31" visible="1" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="4" macroType="MB_TYPE_ACTION_CUSTOM" actionTableID="647394" imageID="14" imageName="BBToolsTwo" actionID="ChangeLanguageCN`MAX Script Tools" tip="Repair Tool " label="" />
+            </Items>
+        </Window>
+        
+        <Window name="NDTools03" type="T" rank="14" subRank="1" hidden="0" dPanel="4" tabbed="0" curTab="-1" cType="1" toolbarRows="7" toolbarType="12">
+            <FRect left="1273" top="794" right="1359" bottom="1083" />
+            <DRect left="40" top="131" right="80" bottom="330" />
+            <DRectPref left="2147483647" top="2147483647" right="-2147483648" bottom="-2147483648" />
+            <CurPos left="40" top="131" right="80" bottom="330" floating="0" panelID="4" />
+            <Items>
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="Export_skin_C3`NDTools" tip="AllC3Exporter" label="C3分段导出工具" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="S3_BatExp`NDTools" tip="S3_BatExp" label="S3导出工具" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="KeyTools`NDTools" tip="KeyTools" label="KeyTools" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="C3Scence_socket`NDTools" tip="C3挂点" label="C3挂点" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="C3ScenceRota`NDTools" tip="C3场景旋转工具" label="C3ScenceRota" />
+                <Item typeID="2" type="CTB_MACROBUTTON" width="0" height="0" controlID="0" macroTypeID="3" macroType="MB_TYPE_ACTION" actionTableID="647394" imageID="-1" imageName="" actionID="c3efftoolkit`NDTools" tip="c3efftoolkit" label="C3_Eff" />
+            </Items>
+        </Window>
+    </CUIWindows>
+    
+</ADSK_CUI>

@@ -1,0 +1,1564 @@
+<?xml version="1.0" encoding="utf-16"?>
+<Person xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>1.33</Name>
+  <IsGrouping>true</IsGrouping>
+  <Children>
+    <Person>
+      <Name>绑定</Name>
+      <IsGrouping>true</IsGrouping>
+      <Children>
+        <Person>
+          <Name>蒙皮</Name>
+          <IsGrouping>true</IsGrouping>
+          <Children>
+            <Person>
+              <Name>Rigging_CombineSkin</Name>
+              <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>Rigging_CombineSkin.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <message>合并或者拆分模型权重，</message>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>SkinTools权重</Name>
+              <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>SkinTools.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>Xr_SkinTool.ms</Name>
+              <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>Xr_SkinTool.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+          </Children>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>动画镜像3.3</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>Anim_mirror_v_3.3_rollout.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>SkinHideManager_v0.3</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>SkinHideManager_v0.3.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>辅助物体工具_v02</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>CustomScript\辅助物体工具_v02.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>骨骼链FKIK工具</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>gugelianFKIKgongju.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>ND曲线IK</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>NDquxianIK.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>权重工具组</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>ChangSkinWeight_v2.4.0.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>角色缩放工具组</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>charactorScaleTool.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>选中对象位置创建曲线</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>xuanzhongduixiangweizhichuangjianquxian.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>样条线创建骨骼</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>yangtiaoxianchuangjianguge.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>骨骼驱动动画</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>gugequdongdonghua.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>路径约束</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>lujingyueshu.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>PhyToSkin</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>PhyToSkin.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>点动画塌陷</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>diandonghuataxian.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>点面驱动.ms</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>dianmianqudong.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>辅助物体.ms</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>fuzhuwuti.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>武器自动 IK FK.ms</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>wuqizidongIKFK.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>绑定约束工具</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>yueshu_bang_ding_v1.7_9.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>mirrormorph</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>mirrormorph.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>镜像变形器</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>MorphSliders</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>MorphSliders_11.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>选择面板生成器</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>objectPicker.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>pxMorphSliders</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>pxMorphSliders.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>springcontroller.ms</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>springcontroller.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>twistbones.ms</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>twistbones.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>UILayout_V1.01_HPK.ms</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>UILayout_V1.01_HPK.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>还原bip的外观和修改器</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>还原bip的外观和修改器.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>正反创建自动触手绑定工具</Name>
+          <StartupFolder>scripts\NDTools\Rig</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>TentacleMaker_05.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>自动飘带动画绑定工具</Name>
+          <StartupFolder>scripts\NDTools\Rig</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>yunAutoAnimtion_fixFlip-v3.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>重置骨骼外形</Name>
+          <StartupFolder>scripts\NDTools\Rig</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>重置骨骼外形.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>恢复Bone被转换为多边型之后的外形属性，</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>拉伸转缩放</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>convert_stretch_scale.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>将Bone骨骼的拉伸转换为缩放以便导出</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>虚幻Max2UEPoseDriver修型工具</Name>
+          <StartupFolder>scripts\Max2UE5PoseDriver</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>Start启动.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>3dsMax 导出 虚幻 修型配置工具</message>
+          <hasHelp>false</hasHelp>
+          <HelpUrl>https://sundaybox.cc/pages/5aac7d/</HelpUrl>
+        </Person>
+        <Person>
+          <Name>选择根节点重建骨骼.mse</Name>
+          <StartupFolder>scripts\NDTools\Rig</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>选择根节点重建骨骼.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>选中任意结构骨架，使用 Bone 重建</message>
+          <hasHelp>false</hasHelp>
+          <HelpUrl>https://sundaybox.cc/pages/77e697/</HelpUrl>
+        </Person>
+        <Person>
+          <Name>大触手修改版</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>大触手修改版.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <message>大触手修改版 </message>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>CoTracker3跟踪点骨骼约束工具.ms</Name>
+          <StartupFolder>scripts\CoTracker3-3dsMax</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>CoTracker3跟踪点骨骼约束工具.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <message>CoTracker3跟踪点骨骼约束工具</message>
+          <hasHelp>false</hasHelp>
+          <HelpUrl>https://sundaybox.cc/pages/CoTrackerToMax/</HelpUrl>
+        </Person>
+        <Person>
+          <Name>骨骼链编辑工具</Name>
+          <StartupFolder>scripts\NDTools\Rig</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>change_bone_chain_v32.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <message>重新分配骨骼链节数，合并骨骼，锁定曲线等功能</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+      </Children>
+      <hasHelp>false</hasHelp>
+    </Person>
+    <Person>
+      <Name>动画</Name>
+      <IsGrouping>true</IsGrouping>
+      <Children>
+        <Person>
+          <Name>Biped 选择</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>cstools.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>VertexAnimationTools</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>VertexAnimationTools.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>SpringMax飘带</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>springMax\SpringMax.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>动画对齐工具</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>AlignTool.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>骨骼动画镜像工具</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>AnimationMirror.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>动画轨迹工具组</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>AnimationToolGroup.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>动画工具组</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>animation_tools_BB.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>暴力黏贴工具</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>baoli_copy_anim_tools.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>BoneSpring1.5</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>BoneSpring1.5.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>动画POSE复制黏贴工具</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>CopyAnimation.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>帧位一致.ms</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>zhenweiyizhi.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>柔体工具组</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>SoftBodyToolGroup.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>导出动画曲线.ms</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>daochudonghuaquxian.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>BoneRig RootMotion.ms</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>BoneRig RootMotion.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>快速对齐工具</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>CustomScript\快速对齐工具.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>动画重定向 - 菜单</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>LoadBipedAinmPicker_FBXmap.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>注意菜单栏变化，只是添加到菜单栏，</message>
+          <hasHelp>false</hasHelp>
+          <HelpUrl>https://sundaybox.cc/pages/113c09/</HelpUrl>
+        </Person>
+        <Person>
+          <Name>运动路径_BY东见云</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>yundonglujing_BYdongjianyun.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>帧对齐</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>alexanimalign_0.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>书签</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>AnimaRange.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>运动重影</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>LightTable.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>ProTrajectoryHandles</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>ProTrajectoryHandles.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>SpringMagic_Enhanced.ms</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>SpringMagic_Enhanced.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>SpringMagic_Old.mse</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>SpringMagic_Old.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>导出曲线_虚幻</Name>
+          <StartupFolder>scripts\NDTools\other</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>导出曲线_虚幻_02.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>可以将曲线导出成 json 以便在 虚幻中导入</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>飘带解算-免X轴</Name>
+          <StartupFolder>scripts\NDTools\other</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>飘带解算-免X轴.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>子墨改良版本，可计算各种</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>拉伸转缩放</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>拉伸转缩放.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>Bone拉伸缩放导出检测工具</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>运动路径_速度曲线_v3.1</Name>
+          <StartupFolder>scripts\NDTools\other</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>运动路径_速度曲线_v3.1.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <message>轨迹工具 速度曲线版本</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>运动路径_BY东见云_相对相机路径_v2</Name>
+          <StartupFolder>scripts\NDTools\other</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>运动路径_BY东见云_相对相机路径_v2.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <message>轨迹工具 相机视角版本</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>3DsMax_SpringSolving - 子墨</Name>
+          <StartupFolder>scripts\NDTools\other</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>3DsMax_SpringSolving.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <message>飘带解算</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>CoTracker3跟踪数据导入导出工具</Name>
+          <StartupFolder>scripts\CoTracker3-3dsMax</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>Start启动.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>CoTracker3跟踪数据导入导出工具</message>
+          <hasHelp>false</hasHelp>
+          <HelpUrl>https://sundaybox.cc/pages/CoTrackerToMax/</HelpUrl>
+        </Person>
+      </Children>
+      <hasHelp>false</hasHelp>
+    </Person>
+    <Person>
+      <Name>文件</Name>
+      <IsGrouping>true</IsGrouping>
+      <Children>
+        <Person>
+          <Name>批量</Name>
+          <IsGrouping>true</IsGrouping>
+          <Children>
+            <Person>
+              <Name>Bip</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\Bip.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>Bip批量导入导出工具2</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\Bip批量导入导出工具4.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <message>批量导入导出 bip ,xaf 动画</message>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>挂点改名</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.mse</ExtensionType>
+              <SubPath>batchTool\改挂点名V2.mse</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>检查重名</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.mse</ExtensionType>
+              <SubPath>batchTool\检查重名.mse</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>自动创建包围盒</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.mse</ExtensionType>
+              <SubPath>batchTool\自动创建包围盒.mse</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>OBJ批量导入</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\OBJ批量导入.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>随机选择物体</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\随机选择物体.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>UI自动排列模型</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\UI自动排列模型.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>导入fbx和多个fbx</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\导入fbx和多个fbx.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>导入obj和多个obj</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\导入obj和多个obj.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+          </Children>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>时间轴工具栏</Name>
+          <IsGrouping>true</IsGrouping>
+          <Children>
+            <Person>
+              <Name>A#1#导画#快速复制动画</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\A#1#导画#快速复制动画.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <message>直接复制 动画控制器</message>
+              <hasHelp>false</hasHelp>
+              <HelpUrl>https://sundaybox.cc/pages/aa7f77/</HelpUrl>
+            </Person>
+            <Person>
+              <Name>A#2#剪影#选择模型显示剪影</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\A#2#剪影#选择模型显示剪影.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>A#3#重名#检查重名</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\A#3#重名#检查重名.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>A#4#刀光#SwordTrail_201</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\A#4#刀光#SwordTrail_201.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>A#5#配挂#先选连接上后选挂点</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\A#5#配挂#先选连接上后选挂点.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>B#1#Save#另保存文件</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\B#1#Save#另保存文件.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>B#2#R90#角度捕捉90</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\B#2#R90#角度捕捉90.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>B#3#R5#角度捕捉5</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\B#3#R5#角度捕捉5.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>B#4#轨迹#运动轨迹</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\B#4#轨迹#运动轨迹.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>B#5#关轨#取消运动轨迹</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\B#5#关轨#取消运动轨迹.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>B#6#路径#运动路径</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\B#6#路径#运动路径.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>C#1#清集#删除空选择集</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\C#1#清集#删除空选择集.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>C#2#连接#后选的连接上后选的</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>TimeLine_Tools\C#2#连接#后选的连接上后选的.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+          </Children>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>渲染</Name>
+          <IsGrouping>true</IsGrouping>
+          <Children>
+            <Person>
+              <Name>多方向渲染工具</Name>
+              <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>多方向渲染工具（集成修改版）.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+          </Children>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>S3_导出</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>S3_BatExp.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>另保存_自动标记制作人</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>Save_FilePath_vip.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>选择集复制_v3</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>CustomScript\选择集复制_v3.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>魔域模型分层</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>CustomScript\魔域模型分层.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>FBX快速导出</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>auto_export_FBX.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>模型检查工具</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>CheckObjForSkin.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>FBX分段</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>FbxActionClipsTool_j.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>FBX工具.ms</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>FBXgongju.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>贴图路径整理2</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>MapPathCleanUp.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>杀毒清理工具</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>Security_Essentials0.2.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>批量导出导入bip - bone动画</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>piliangdaochudaorubip-bonedonghua.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>批量导出_FBX动作资源_v3.0</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>batchTool\批量导出_FBX动作资源_v3.0.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>渣渣渲屏</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>zhazhaxuanping.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>渲染动画预览</message>
+          <hasHelp>false</hasHelp>
+          <HelpUrl>https://sundaybox.cc/pages/0d9ddf/</HelpUrl>
+        </Person>
+        <Person>
+          <Name>批量转换</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>Batch Import Convert.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>构图参考</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>ImageCompHelper.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>LayerManagerAlternative</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>LayerManagerAlternative.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>超级改名</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>P_ObjectRenamer.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>MassFX.ms</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>MassFX.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>批量导出FBX-含蒙皮</Name>
+          <StartupFolder>scripts\NDTools\batchTool</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>批量导出FBX-含蒙皮.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>多方向渲染工具</Name>
+          <StartupFolder>scripts\NDTools\other</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>多方向渲染工具（集成修改版）.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>ActorXImporter</Name>
+          <StartupFolder>scripts\NDTools\other</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>ActorXImporter\ActorXImporter.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <message>ActorXImporter ,psa, psk 导入工具</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+      </Children>
+      <hasHelp>false</hasHelp>
+    </Person>
+    <Person>
+      <Name>材质</Name>
+      <IsGrouping>true</IsGrouping>
+      <Children>
+        <Person>
+          <Name>设置制作人</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>setini_vip_name.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>贴图路径整理</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>CustomScript\贴图路径整理.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>ProColor</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>ProColor.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+      </Children>
+      <hasHelp>false</hasHelp>
+    </Person>
+    <Person>
+      <Name>其他</Name>
+      <IsGrouping>true</IsGrouping>
+      <Children>
+        <Person>
+          <Name>选择_Bone</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>Tool_bone_369434754.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>选择_Biped</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>Tool_CS_369434754.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>天晴动作工具组下载器</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>tianqin_download_tools.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>时间轴工具条</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>TimeLine_Tools_Bar_v3.1_bate.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+      </Children>
+      <hasHelp>false</hasHelp>
+    </Person>
+    <Person>
+      <Name>模型</Name>
+      <IsGrouping>true</IsGrouping>
+      <Children>
+        <Person>
+          <Name>批量</Name>
+          <IsGrouping>true</IsGrouping>
+          <Children>
+            <Person>
+              <Name>Bip</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\Bip.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>Bip批量导入导出工具2</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\Bip批量导入导出工具4.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <message>批量导入导出 bip ,xaf 动画</message>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>挂点改名</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.mse</ExtensionType>
+              <SubPath>batchTool\改挂点名V2.mse</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>检查重名</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.mse</ExtensionType>
+              <SubPath>batchTool\检查重名.mse</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>自动创建包围盒</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.mse</ExtensionType>
+              <SubPath>batchTool\自动创建包围盒.mse</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>OBJ批量导入</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\OBJ批量导入.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>随机选择物体</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\随机选择物体.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>UI自动排列模型</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\UI自动排列模型.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>导入fbx和多个fbx</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\导入fbx和多个fbx.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>导入obj和多个obj</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>batchTool\导入obj和多个obj.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+          </Children>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>UV</Name>
+          <IsGrouping>true</IsGrouping>
+          <Children>
+            <Person>
+              <Name>UV平移缩放功能</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>UV\UV平移缩放功能.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>UV缩放工具V1.1</Name>
+              <StartupFolder>scripts\NDTools</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>UV\UV缩放工具V1.1.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+          </Children>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>破碎工具</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>FractureVoronoi.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>Collider</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>Collider.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>lod_creator</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>lod_creator.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>XnaLara Converter.ms</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>XnaLara Converter.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>批量导出模型 (可导stl) N00BY_Export_v2.1</Name>
+          <StartupFolder>scripts\NDTools\batchTool</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>批量导出模型 (可导stl) N00BY_Export_v2.1.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+      </Children>
+      <hasHelp>false</hasHelp>
+    </Person>
+    <Person>
+      <Name>开发</Name>
+      <IsGrouping>true</IsGrouping>
+      <Children>
+        <Person>
+          <Name>RolloutBuilder</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>RolloutBuilder.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>simple_hwnd_viewer.ms</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>simple_hwnd_viewer.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>WinBox.ms</Name>
+          <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>WinBox.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>加载【天晴工具条】</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>加载天晴工具条.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>加载【子弹 - 动画师工具】</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>加载动画师工具.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>Choose Max Script file</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>Choose Max Script file.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>Show.NetProperty</Name>
+          <StartupFolder>scripts\NDTools</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>developers\Show.NetProperty.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>可以查阅 Net对象的属性，事件等等信息</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>翻译Translate Tools</Name>
+          <StartupFolder>scripts\NDTools\other</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>翻译Translate Tools_MultLang.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <message>脚本翻译工具</message>
+          <hasHelp>false</hasHelp>
+        </Person>
+      </Children>
+      <hasHelp>false</hasHelp>
+    </Person>
+  </Children>
+  <Path>天晴盒子</Path>
+  <hasHelp>false</hasHelp>
+</Person>

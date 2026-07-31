@@ -1,0 +1,1 @@
+(NitrousGraphicsManager.GetActiveViewportSetting()).VisualStyleMode = #ConsistentColors

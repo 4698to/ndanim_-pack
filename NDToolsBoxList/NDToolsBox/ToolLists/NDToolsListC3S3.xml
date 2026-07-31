@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-16"?>
+<Person xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>1.45</Name>
+  <IsGrouping>true</IsGrouping>
+  <Children>
+    <Person>
+      <Name>C3</Name>
+      <IsGrouping>true</IsGrouping>
+      <Children>
+        <Person>
+          <Name>C3_位移辅助</Name>
+          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>C3_weiyifuzhu.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>C3_部件管理器</Name>
+          <StartupFolder>scripts\NDTools\C3S3</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>C3RootBoneMaster.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>C3_场景相机</Name>
+          <StartupFolder>scripts\NDTools\C3S3</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>C3ScenceRota.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>C3_挂点创建</Name>
+          <StartupFolder>scripts\NDTools\C3S3</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>C3socket.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>C3_分段工具</Name>
+          <StartupFolder>scripts\NDTools\C3S3</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>C3_Animation.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>C3_骨骼排序查看</Name>
+          <StartupFolder>scripts\NDTools\C3S3</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>C3_bonesequence.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>C3_复制排序工具</Name>
+          <StartupFolder>scripts\NDTools\C3S3</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>C3_copy_link.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>C3_挂点排序工具</Name>
+          <StartupFolder>scripts\NDTools\C3S3</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>C3_sequence.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>C3_打K工具</Name>
+          <StartupFolder>scripts\NDTools\C3S3</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>KeyTool2.1.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>C3_导出助手</Name>
+          <StartupFolder>scripts\NDTools\C3S3</StartupFolder>
+          <ExtensionType>.mse</ExtensionType>
+          <SubPath>AllC3Exporter.mse</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+        <Person>
+          <Name>重置版-批量添加挂点_v3</Name>
+          <StartupFolder>scripts\NDTools\C3S3</StartupFolder>
+          <ExtensionType>.ms</ExtensionType>
+          <SubPath>重置版-批量添加挂点_v3.ms</SubPath>
+          <IsGrouping>false</IsGrouping>
+          <Children />
+          <RootType>MaxRoot</RootType>
+          <hasHelp>false</hasHelp>
+        </Person>
+      </Children>
+      <hasHelp>false</hasHelp>
+    </Person>
+  </Children>
+  <Path>天晴盒子</Path>
+  <hasHelp>false</hasHelp>
+</Person>
