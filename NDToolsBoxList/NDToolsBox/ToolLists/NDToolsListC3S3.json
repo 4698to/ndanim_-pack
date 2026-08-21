@@ -1,5 +1,5 @@
 {
-  "Name": "1.45",
+  "Name": "1.32",
   "StartupFolder": null,
   "ExtensionType": null,
   "SubPath": null,
@@ -143,20 +143,6 @@
           "StartupFolder": "scripts\\NDTools\\C3S3",
           "ExtensionType": ".mse",
           "SubPath": "AllC3Exporter.mse",
-          "IsGrouping": false,
-          "Children": [],
-          "Path": null,
-          "RootType": "MaxRoot",
-          "ext": null,
-          "message": null,
-          "hasHelp": false,
-          "HelpUrl": null
-        },
-        {
-          "Name": "重置版-批量添加挂点_v3",
-          "StartupFolder": "scripts\\NDTools\\C3S3",
-          "ExtensionType": ".ms",
-          "SubPath": "重置版-批量添加挂点_v3.ms",
           "IsGrouping": false,
           "Children": [],
           "Path": null,
