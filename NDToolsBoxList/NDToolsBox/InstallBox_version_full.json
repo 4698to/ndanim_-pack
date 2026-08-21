@@ -16,7 +16,7 @@
       "LastWriteTime": "/Date(1760439722342+0800)/",
       "SeriesMax": 2024,
       "SeriesMin": 2013,
-      "abouttext": "天晴工具组资源，【新增】biped动画库组件 0.21 版本，新增 加载.bip 设置，更新对齐工具",
+      "abouttext": "天晴工具组资源，蒙皮权重工具更新",
       "dirpath": "scripts/NDTools",
       "helplink": "https://sundaybox.cc/pages/BipedLib/",
       "isParent": false,
@@ -367,7 +367,7 @@
       "savepath": null,
       "selected": true,
       "sha": "PxHKDNzPhuDEnTJ4mU8OTF1N0nz21TttymIJJ8rVyOQ=",
-      "targetpath": "/www/wwwroot/default/ndbox/ND-Package/ToolsList",
+      "targetpath": "/www/wwwroot/default/ndanim_-pack/NDToolsBoxList",
       "type": 1,
       "version": 1.3,
       "zipname": "NDBoxList.zip"
@@ -809,7 +809,7 @@
       "savepath": "",
       "selected": false,
       "sha": "EUQptZEWeLVvq3SsLSNYNhEAkKs2RIicZOuOO/gOxz0=",
-      "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/DIMaster_20080824",
+      "targetpath": "/www/wwwroot/default/ndanim_-pack/DIMaster_20080824",
       "type": 0,
       "version": 1,
       "zipname": "DIMaster_20080824.zip"
@@ -939,7 +939,7 @@
           "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02",
           "selected": true,
           "sha": "LVe1t2nvdSa23fZ4xcmAGfZ+LFNTY48ixsZ4YU2ySds=",
-          "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02/2018",
+          "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.09.02/2018",
           "type": 0,
           "version": 0.2,
           "zipname": "SmartRefs 1.09.022018.zip"
@@ -959,7 +959,7 @@
           "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02",
           "selected": true,
           "sha": "PbNAJlC39o6IoIs2OYMBIBzgzXPA9tDoXjK8fjy5VSI=",
-          "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02/2019",
+          "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.09.02/2019",
           "type": 0,
           "version": 0.2,
           "zipname": "SmartRefs 1.09.022019.zip"
@@ -979,7 +979,7 @@
           "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02",
           "selected": true,
           "sha": "7DZV/ARbt+kMLCzfM4dnwLTkch50iap9v4w/ovPyDRg=",
-          "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02/2020",
+          "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.09.02/2020",
           "type": 0,
           "version": 0.2,
           "zipname": "SmartRefs 1.09.022020.zip"
@@ -999,7 +999,7 @@
           "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02",
           "selected": true,
           "sha": "RkXAKiCI1yJkuDqy03fzho2vQyA9+YByqVl2a64agKY=",
-          "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02/2021",
+          "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.09.02/2021",
           "type": 0,
           "version": 0.2,
           "zipname": "SmartRefs 1.09.022021.zip"
@@ -1019,7 +1019,7 @@
           "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02",
           "selected": true,
           "sha": "MF3Aa8e/dnc65Cm6VQfV5m4NEF3DpR5nG3rFecXVX+c=",
-          "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02/2022",
+          "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.09.02/2022",
           "type": 0,
           "version": 0.2,
           "zipname": "SmartRefs 1.09.022022.zip"
@@ -1039,7 +1039,7 @@
           "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02",
           "selected": true,
           "sha": "Q7boEM8G2K2LsKW0wnLlFrFJLOXMs8N/0TY/fNHsq+c=",
-          "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02/2023",
+          "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.09.02/2023",
           "type": 0,
           "version": 0.2,
           "zipname": "SmartRefs 1.09.022023.zip"
@@ -1059,7 +1059,7 @@
           "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02",
           "selected": true,
           "sha": "jdLEjjIs7igUkNUCd1R9xB9GFXuMstK1Q7cnGeqmna4=",
-          "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02/2024",
+          "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.09.02/2024",
           "type": 0,
           "version": 0.2,
           "zipname": "SmartRefs 1.09.022024.zip"
@@ -1079,7 +1079,7 @@
           "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02",
           "selected": true,
           "sha": "ZMYDpUI/16OiNyVU6jYtOd+WcO3DHMg5ixNo8SP11Qw=",
-          "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02/2025",
+          "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.09.02/2025",
           "type": 0,
           "version": 0.2,
           "zipname": "SmartRefs 1.09.022025.zip"
@@ -1093,7 +1093,7 @@
       "savepath": "",
       "selected": true,
       "sha": null,
-      "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.09.02",
+      "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.09.02",
       "type": 0,
       "version": 0,
       "zipname": "SmartRefs 1.09.02"
@@ -1121,7 +1121,7 @@
           "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.04.02",
           "selected": true,
           "sha": "pNVD6KwNr/Xas08hCIbP5HWHAtLviF92S5xZvp9RBpQ=",
-          "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.04.02/{code_GetMaxDir_2014}",
+          "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.04.02/{code_GetMaxDir_2014}",
           "type": 0,
           "version": 0.2,
           "zipname": "SmartRefs 1.04.02{code_GetMaxDir_2014}.zip"
@@ -1141,7 +1141,7 @@
           "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.04.02",
           "selected": true,
           "sha": "CiBC4Qy5iDjjAatRxVP6BmByx+nH3+s5MDXt3+deovo=",
-          "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.04.02/{code_GetMaxDir_2015}",
+          "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.04.02/{code_GetMaxDir_2015}",
           "type": 0,
           "version": 0.2,
           "zipname": "SmartRefs 1.04.02{code_GetMaxDir_2015}.zip"
@@ -1161,7 +1161,7 @@
           "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.04.02",
           "selected": true,
           "sha": "Ez44ohgiLUzRDYzvzxBccHGOMohixqyNYJ3seI29VP8=",
-          "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.04.02/{code_GetMaxDir_2016}",
+          "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.04.02/{code_GetMaxDir_2016}",
           "type": 0,
           "version": 0.2,
           "zipname": "SmartRefs 1.04.02{code_GetMaxDir_2016}.zip"
@@ -1181,7 +1181,7 @@
           "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.04.02",
           "selected": true,
           "sha": "oHmDMNSuRFQ6quYMboXhQXFlxKWkYEjQ6GVN0NgEHBQ=",
-          "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.04.02/{code_GetMaxDir_2017}",
+          "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.04.02/{code_GetMaxDir_2017}",
           "type": 0,
           "version": 0.2,
           "zipname": "SmartRefs 1.04.02{code_GetMaxDir_2017}.zip"
@@ -1195,7 +1195,7 @@
       "savepath": "",
       "selected": true,
       "sha": null,
-      "targetpath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015/SmartRefs 1.04.02",
+      "targetpath": "/www/wwwroot/default/ndanim_-pack/SmartRefs 1.04.02",
       "type": 0,
       "version": 0,
       "zipname": "SmartRefs 1.04.02"
