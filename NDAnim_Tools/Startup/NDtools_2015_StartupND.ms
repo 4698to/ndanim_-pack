@@ -80,8 +80,9 @@
 				)
 				try (
 					-- 同步下载版本信息，带10秒超时，避免启动长时间卡住
-					req = dotNetObject "System.Net.HttpWebRequest" (dotNetObject "System.Uri" url)
-					req.Timeout = 10000
+					reqClass = dotNetClass "System.Net.HttpWebRequest"
+					req = reqClass.Create (dotNetObject "System.Uri" url)
+					req.Timeout = 5000
 					req.Proxy = undefined
 					resp = req.GetResponse()
 					stream = resp.GetResponseStream()
@@ -91,7 +92,7 @@
 					resp.Close()
 					format "下载到版本号 -> % \n" this.down_str
 				) catch (
-					-- 无法下载到版本号，删除本脚本启动
+					-- 无法下载到版本号，删除本启动脚本
 					format "无法下载 % 服务器上的版本信息,删除启动自动检测脚本\n" url
 					try (deleteFile this.selfpath) catch()
 					this.down_str = this.ver_str
