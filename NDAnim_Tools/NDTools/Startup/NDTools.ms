@@ -2,19 +2,6 @@
 2026-07-21 新增 C3特效组工具入口
 */
 
-fn SRFindMenuItem theMenu theTitle = 
-(
-	local theItem=undefined
-	for i=1 to theMenu.numItems() do
-	(
-		local theCurrItem=theMenu.getitem i
-		if theCurrItem!=undefined and theCurrItem.gettitle()==theTitle then(
-			theItem=theCurrItem
-		)
-	)
-	theItem
-)
-
 
 
 macroScript NDBoxTool_01 category:"NDBoxTool_01" buttonText: "天晴动作工具栏"
@@ -45,44 +32,12 @@ macroScript NDBoxTool_03 category:"NDBoxTool_03" buttonText: "Bip动画库"
 		messageBox file_path title:"缺少"
 	)
 )
-if ((menuMan.findMenu "NDBox") != undefined) then
-(
-	theFileMenu = menuMan.findMenu "NDBox"
-	
-	if (SRFindMenuItem theFileMenu "Bip动画库") == undefined do 
-	(
-		SeparatorItem = menuMan.createSeparatorItem()
-		theFileMenu.addItem SeparatorItem (theFileMenu.numItems() + 1 )
-
-		Action = menuMan.createActionItem "NDBoxTool_03" "NDBoxTool_03"
-		theFileMenu.addItem Action (theFileMenu.numItems() + 1 )
-	)
-
-	if (SRFindMenuItem theFileMenu "天晴动作工具栏") == undefined do 
-	(
-		SeparatorItem = menuMan.createSeparatorItem()
-		theFileMenu.addItem SeparatorItem (theFileMenu.numItems() + 1 )
-
-		Action = menuMan.createActionItem "NDBoxTool_01" "NDBoxTool_01"
-		theFileMenu.addItem Action (theFileMenu.numItems() + 1 )
-	)
-
-	/* if (SRFindMenuItem theFileMenu "上传分享反馈") == undefined do 
-	(
-		Action = menuMan.createActionItem "NDBoxTool_02" "NDBoxTool_02"
-		theFileMenu.addItem Action (theFileMenu.numItems() + 1 )
-	) */
-
-	menuMan.updateMenuBar()
-)
 
 
-
-
-
-
-
-colorman.reInitIcons()
+-- colorman.reInitIcons()
+-- 注释原因：此函数在低版本Max(2024及以下)切换颜色主题时会导致崩溃
+-- 因为主题切换时Max会重新加载UI配置，此时调用reInitIcons会触发竞态条件
+-- cui.loadConfig已经会自动更新图标，无需手动调用reInitIcons
 
 
 
@@ -699,3 +654,60 @@ icon:#("Security_Essentials",1)
 
 	callbacks.removescripts id:#PreOpenReset
 	callbacks.addscript #filePreOpen "PreOpenReset()" id:#PreOpenReset
+
+
+fn SRFindMenuItem theMenu theTitle = 
+(
+	local theItem=undefined
+	for i=1 to theMenu.numItems() do
+	(
+		local theCurrItem=theMenu.getitem i
+		if theCurrItem!=undefined and theCurrItem.gettitle()==theTitle then(
+			theItem=theCurrItem
+		)
+	)
+	theItem
+)
+
+-- 创建菜单项的函数（延迟执行，避免在UI重载期间崩溃）
+fn fnAddNDBoxMenuItems =
+(
+	if ((menuMan.findMenu "NDBox") != undefined) then
+	(
+		theFileMenu = menuMan.findMenu "NDBox"
+		
+		if (SRFindMenuItem theFileMenu "Bip动画库") == undefined do 
+		(
+			SeparatorItem = menuMan.createSeparatorItem()
+			theFileMenu.addItem SeparatorItem (theFileMenu.numItems() + 1 )
+
+			Action = menuMan.createActionItem "NDBoxTool_03" "NDBoxTool_03"
+			theFileMenu.addItem Action (theFileMenu.numItems() + 1 )
+		)
+
+		if (SRFindMenuItem theFileMenu "天晴动作工具栏") == undefined do 
+		(
+			SeparatorItem = menuMan.createSeparatorItem()
+			theFileMenu.addItem SeparatorItem (theFileMenu.numItems() + 1 )
+
+			Action = menuMan.createActionItem "NDBoxTool_01" "NDBoxTool_01"
+			theFileMenu.addItem Action (theFileMenu.numItems() + 1 )
+		)
+
+		menuMan.updateMenuBar()
+	)
+)
+
+-- 修复：移除立即执行的菜单创建，改为延迟执行
+-- 原因：在UI重载期间（如切换颜色主题）执行菜单更新会导致Max崩溃
+-- 使用systemPostNew回调确保只在Max完全启动后才更新菜单
+if (callbacks.notificationParam() == undefined) then
+(
+	-- 在startup执行期间，使用systemPostNew延迟创建菜单
+	callbacks.addScript #systemPostNew "try(fnAddNDBoxMenuItems())catch(); try(callbacks.removeScripts id:#NDBoxMenuItemsInit)catch()" id:#NDBoxMenuItemsInit persistent:false
+)
+else
+(
+	-- 如果是手动执行此脚本（非startup），则立即创建
+	fnAddNDBoxMenuItems()
+)
