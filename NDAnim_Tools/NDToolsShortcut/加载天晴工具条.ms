@@ -254,17 +254,25 @@ rollout mergaNDToolsBar "天晴动作脚本工具条 【0.2】" width:420 height
 		startup_file = startup_path + target_flies[2]
 		if doesFileExist startup_file then  
 		(
+			-- 首次点击时全局未加载：先 filein；启动脚本仅在有更新时才弹窗，
+			-- 所以这里无论是否已加载，都强制打开更新提示
+			if NDBoxDownload_updata_rollout == undefined or try_test_ndboxUp_init == undefined do
+			(
+				try(filein startup_file)catch()
+			)
+
 			if NDBoxDownload_updata_rollout != undefined and try_test_ndboxUp_init != undefined then 
 			(
+				try(destroyDialog NDBoxDownload_updata_rollout)catch()
 				try_test_ndboxUp_init.try_get_up_data()
 				try_test_ndboxUp_init.test_type = "1"
-
-				
 				createDialog NDBoxDownload_updata_rollout
 				NDBoxDownload_updata_rollout.backen = try_test_ndboxUp_init
 				NDBoxDownload_updata_rollout.show_msg()
-			)else(
-				filein startup_file
+			)
+			else
+			(
+				messageBox "更新检测脚本加载失败"
 			)
 		)else(
 			messageBox "请先勾选启动3dsMax时 自动检查更新"

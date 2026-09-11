@@ -695,7 +695,7 @@ fn fnAddNDBoxMenuItems =
 				theFileMenu.addItem Action (theFileMenu.numItems() + 1)
 			)
 
-			if (SRFindMenuItem theFileMenu "天晴动作工具栏") == undefined do
+			if (SRFindMenuItem theFileMenu "天晴动作工具栏设置") == undefined do
 			(
 				local SeparatorItem = menuMan.createSeparatorItem()
 				theFileMenu.addItem SeparatorItem (theFileMenu.numItems() + 1)
