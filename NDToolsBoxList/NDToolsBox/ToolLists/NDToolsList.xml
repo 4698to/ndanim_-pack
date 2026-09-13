@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-16"?>
 <Person xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Name>1.33</Name>
+  <Name>1.35</Name>
   <IsGrouping>true</IsGrouping>
   <Children>
     <Person>
@@ -19,11 +19,10 @@
               <IsGrouping>false</IsGrouping>
               <Children />
               <RootType>MaxRoot</RootType>
-              <message>合并或者拆分模型权重，</message>
               <hasHelp>false</hasHelp>
             </Person>
             <Person>
-              <Name>SkinTools权重</Name>
+              <Name>SkinTools.ms</Name>
               <StartupFolder>scripts\BulletScripts\Quote</StartupFolder>
               <ExtensionType>.ms</ExtensionType>
               <SubPath>SkinTools.ms</SubPath>
@@ -304,6 +303,7 @@
           <IsGrouping>false</IsGrouping>
           <Children />
           <RootType>MaxRoot</RootType>
+          <message>原来的大触手工具</message>
           <hasHelp>false</hasHelp>
         </Person>
         <Person>
@@ -324,7 +324,6 @@
           <IsGrouping>false</IsGrouping>
           <Children />
           <RootType>MaxRoot</RootType>
-          <message>恢复Bone被转换为多边型之后的外形属性，</message>
           <hasHelp>false</hasHelp>
         </Person>
         <Person>
@@ -334,63 +333,6 @@
           <SubPath>convert_stretch_scale.mse</SubPath>
           <IsGrouping>false</IsGrouping>
           <Children />
-          <RootType>MaxRoot</RootType>
-          <message>将Bone骨骼的拉伸转换为缩放以便导出</message>
-          <hasHelp>false</hasHelp>
-        </Person>
-        <Person>
-          <Name>虚幻Max2UEPoseDriver修型工具</Name>
-          <StartupFolder>scripts\Max2UE5PoseDriver</StartupFolder>
-          <ExtensionType>.ms</ExtensionType>
-          <SubPath>Start启动.ms</SubPath>
-          <IsGrouping>false</IsGrouping>
-          <Children />
-          <RootType>MaxRoot</RootType>
-          <message>3dsMax 导出 虚幻 修型配置工具</message>
-          <hasHelp>false</hasHelp>
-          <HelpUrl>https://sundaybox.cc/pages/5aac7d/</HelpUrl>
-        </Person>
-        <Person>
-          <Name>选择根节点重建骨骼.mse</Name>
-          <StartupFolder>scripts\NDTools\Rig</StartupFolder>
-          <ExtensionType>.mse</ExtensionType>
-          <SubPath>选择根节点重建骨骼.mse</SubPath>
-          <IsGrouping>false</IsGrouping>
-          <Children />
-          <RootType>MaxRoot</RootType>
-          <message>选中任意结构骨架，使用 Bone 重建</message>
-          <hasHelp>false</hasHelp>
-          <HelpUrl>https://sundaybox.cc/pages/77e697/</HelpUrl>
-        </Person>
-        <Person>
-          <Name>大触手修改版</Name>
-          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
-          <ExtensionType>.ms</ExtensionType>
-          <SubPath>大触手修改版.ms</SubPath>
-          <IsGrouping>false</IsGrouping>
-          <Children />
-          <message>大触手修改版 </message>
-          <hasHelp>false</hasHelp>
-        </Person>
-        <Person>
-          <Name>CoTracker3跟踪点骨骼约束工具.ms</Name>
-          <StartupFolder>scripts\CoTracker3-3dsMax</StartupFolder>
-          <ExtensionType>.ms</ExtensionType>
-          <SubPath>CoTracker3跟踪点骨骼约束工具.ms</SubPath>
-          <IsGrouping>false</IsGrouping>
-          <Children />
-          <message>CoTracker3跟踪点骨骼约束工具</message>
-          <hasHelp>false</hasHelp>
-          <HelpUrl>https://sundaybox.cc/pages/CoTrackerToMax/</HelpUrl>
-        </Person>
-        <Person>
-          <Name>骨骼链编辑工具</Name>
-          <StartupFolder>scripts\NDTools\Rig</StartupFolder>
-          <ExtensionType>.ms</ExtensionType>
-          <SubPath>change_bone_chain_v32.ms</SubPath>
-          <IsGrouping>false</IsGrouping>
-          <Children />
-          <message>重新分配骨骼链节数，合并骨骼，锁定曲线等功能</message>
           <hasHelp>false</hasHelp>
         </Person>
       </Children>
@@ -559,7 +501,7 @@
           <Children />
           <RootType>MaxRoot</RootType>
           <message>注意菜单栏变化，只是添加到菜单栏，</message>
-          <hasHelp>false</hasHelp>
+          <hasHelp>true</hasHelp>
           <HelpUrl>https://sundaybox.cc/pages/113c09/</HelpUrl>
         </Person>
         <Person>
@@ -640,72 +582,7 @@
           <IsGrouping>false</IsGrouping>
           <Children />
           <RootType>MaxRoot</RootType>
-          <message>可以将曲线导出成 json 以便在 虚幻中导入</message>
           <hasHelp>false</hasHelp>
-        </Person>
-        <Person>
-          <Name>飘带解算-免X轴</Name>
-          <StartupFolder>scripts\NDTools\other</StartupFolder>
-          <ExtensionType>.mse</ExtensionType>
-          <SubPath>飘带解算-免X轴.mse</SubPath>
-          <IsGrouping>false</IsGrouping>
-          <Children />
-          <RootType>MaxRoot</RootType>
-          <message>子墨改良版本，可计算各种</message>
-          <hasHelp>false</hasHelp>
-        </Person>
-        <Person>
-          <Name>拉伸转缩放</Name>
-          <StartupFolder>scripts\NDToolsShortcut</StartupFolder>
-          <ExtensionType>.ms</ExtensionType>
-          <SubPath>拉伸转缩放.ms</SubPath>
-          <IsGrouping>false</IsGrouping>
-          <Children />
-          <RootType>MaxRoot</RootType>
-          <message>Bone拉伸缩放导出检测工具</message>
-          <hasHelp>false</hasHelp>
-        </Person>
-        <Person>
-          <Name>运动路径_速度曲线_v3.1</Name>
-          <StartupFolder>scripts\NDTools\other</StartupFolder>
-          <ExtensionType>.ms</ExtensionType>
-          <SubPath>运动路径_速度曲线_v3.1.ms</SubPath>
-          <IsGrouping>false</IsGrouping>
-          <Children />
-          <message>轨迹工具 速度曲线版本</message>
-          <hasHelp>false</hasHelp>
-        </Person>
-        <Person>
-          <Name>运动路径_BY东见云_相对相机路径_v2</Name>
-          <StartupFolder>scripts\NDTools\other</StartupFolder>
-          <ExtensionType>.ms</ExtensionType>
-          <SubPath>运动路径_BY东见云_相对相机路径_v2.ms</SubPath>
-          <IsGrouping>false</IsGrouping>
-          <Children />
-          <message>轨迹工具 相机视角版本</message>
-          <hasHelp>false</hasHelp>
-        </Person>
-        <Person>
-          <Name>3DsMax_SpringSolving - 子墨</Name>
-          <StartupFolder>scripts\NDTools\other</StartupFolder>
-          <ExtensionType>.mse</ExtensionType>
-          <SubPath>3DsMax_SpringSolving.mse</SubPath>
-          <IsGrouping>false</IsGrouping>
-          <Children />
-          <message>飘带解算</message>
-          <hasHelp>false</hasHelp>
-        </Person>
-        <Person>
-          <Name>CoTracker3跟踪数据导入导出工具</Name>
-          <StartupFolder>scripts\CoTracker3-3dsMax</StartupFolder>
-          <ExtensionType>.ms</ExtensionType>
-          <SubPath>Start启动.ms</SubPath>
-          <IsGrouping>false</IsGrouping>
-          <Children />
-          <RootType>MaxRoot</RootType>
-          <message>CoTracker3跟踪数据导入导出工具</message>
-          <hasHelp>false</hasHelp>
-          <HelpUrl>https://sundaybox.cc/pages/CoTrackerToMax/</HelpUrl>
         </Person>
       </Children>
       <hasHelp>false</hasHelp>
@@ -731,12 +608,11 @@
             <Person>
               <Name>Bip批量导入导出工具2</Name>
               <StartupFolder>scripts\NDTools</StartupFolder>
-              <ExtensionType>.ms</ExtensionType>
-              <SubPath>batchTool\Bip批量导入导出工具4.ms</SubPath>
+              <ExtensionType>.mse</ExtensionType>
+              <SubPath>batchTool\Bip批量导入导出工具2.mse</SubPath>
               <IsGrouping>false</IsGrouping>
               <Children />
               <RootType>MaxRoot</RootType>
-              <message>批量导入导出 bip ,xaf 动画</message>
               <hasHelp>false</hasHelp>
             </Person>
             <Person>
@@ -834,9 +710,7 @@
               <IsGrouping>false</IsGrouping>
               <Children />
               <RootType>MaxRoot</RootType>
-              <message>直接复制 动画控制器</message>
               <hasHelp>false</hasHelp>
-              <HelpUrl>https://sundaybox.cc/pages/aa7f77/</HelpUrl>
             </Person>
             <Person>
               <Name>A#2#剪影#选择模型显示剪影</Name>
@@ -1107,7 +981,7 @@
           <Children />
           <RootType>MaxRoot</RootType>
           <message>渲染动画预览</message>
-          <hasHelp>false</hasHelp>
+          <hasHelp>true</hasHelp>
           <HelpUrl>https://sundaybox.cc/pages/0d9ddf/</HelpUrl>
         </Person>
         <Person>
@@ -1178,16 +1052,6 @@
           <IsGrouping>false</IsGrouping>
           <Children />
           <RootType>MaxRoot</RootType>
-          <hasHelp>false</hasHelp>
-        </Person>
-        <Person>
-          <Name>ActorXImporter</Name>
-          <StartupFolder>scripts\NDTools\other</StartupFolder>
-          <ExtensionType>.ms</ExtensionType>
-          <SubPath>ActorXImporter\ActorXImporter.ms</SubPath>
-          <IsGrouping>false</IsGrouping>
-          <Children />
-          <message>ActorXImporter ,psa, psk 导入工具</message>
           <hasHelp>false</hasHelp>
         </Person>
       </Children>
@@ -1298,12 +1162,11 @@
             <Person>
               <Name>Bip批量导入导出工具2</Name>
               <StartupFolder>scripts\NDTools</StartupFolder>
-              <ExtensionType>.ms</ExtensionType>
-              <SubPath>batchTool\Bip批量导入导出工具4.ms</SubPath>
+              <ExtensionType>.mse</ExtensionType>
+              <SubPath>batchTool\Bip批量导入导出工具2.mse</SubPath>
               <IsGrouping>false</IsGrouping>
               <Children />
               <RootType>MaxRoot</RootType>
-              <message>批量导入导出 bip ,xaf 动画</message>
               <hasHelp>false</hasHelp>
             </Person>
             <Person>
@@ -1541,18 +1404,16 @@
           <IsGrouping>false</IsGrouping>
           <Children />
           <RootType>MaxRoot</RootType>
-          <message>可以查阅 Net对象的属性，事件等等信息</message>
           <hasHelp>false</hasHelp>
         </Person>
         <Person>
           <Name>翻译Translate Tools</Name>
           <StartupFolder>scripts\NDTools\other</StartupFolder>
           <ExtensionType>.ms</ExtensionType>
-          <SubPath>翻译Translate Tools_MultLang.ms</SubPath>
+          <SubPath>翻译TranslateTools_MultLang.ms</SubPath>
           <IsGrouping>false</IsGrouping>
           <Children />
           <RootType>MaxRoot</RootType>
-          <message>脚本翻译工具</message>
           <hasHelp>false</hasHelp>
         </Person>
       </Children>
