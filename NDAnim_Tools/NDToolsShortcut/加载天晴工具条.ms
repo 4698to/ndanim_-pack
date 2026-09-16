@@ -7,7 +7,7 @@ QQ:738746223
 try(DestroyDialog mergaNDToolsBar)
 catch()
 
-rollout mergaNDToolsBar "天晴动作脚本工具条 【0.2】" width:420 height:320
+rollout mergaNDToolsBar "天晴动作脚本工具条 【0.2】" width:420 height:360
 (
 	group "启动项设置 - 【取消设置】 需重启3ds Max后生效"
 	(
@@ -29,9 +29,10 @@ rollout mergaNDToolsBar "天晴动作脚本工具条 【0.2】" width:420 height
 	)
 	group "" (
 	    -- Group body.
-		button btn_fix_ui "加载工具条" width:114 height:28 tooltip:"修复工具栏" across:3
+		button btn_fix_ui "加载工具条" width:114 height:28 tooltip:"修复工具栏" across:2
 		button btn_uninstall "移除工具条" width:114 height:28 enabled:true Tooltip:"不用,可卸载"
-		button btn_open_updatatest "打开更新提示" width:114 height:28
+		button btn_open_updatatest "打开更新提示" width:114 height:28 across:2
+		button btn_remove_ndbox_menu "删除NDBox菜单" width:114 height:28 tooltip:"清除 NDBox 下由脚本添加的菜单项（含重复项）"
 	)
     imgTag ndtools_vx_pic "ndtools_vx_pic" transparent:(color 0 255 0) width:392 height:126 
 
@@ -97,6 +98,7 @@ rollout mergaNDToolsBar "天晴动作脚本工具条 【0.2】" width:420 height
 		--先删除旧的工具栏
 		local temp_dele_node = #()
 		local UIwindow = xmldoc.getElementsByTagName("Window")
+		remove_tool_name = #("NDTools01","NDTools02","NDTools03","ND_Animation_Layers")
 		for i=1 to UIwindow.count do
 		(
 			local temp = UIwindow.ItemOf[(i - 1)]
@@ -104,20 +106,10 @@ rollout mergaNDToolsBar "天晴动作脚本工具条 【0.2】" width:420 height
 			(
 				local WindowName = temp.GetAttribute("name")
 				--format "i:: % N::% \r\n" i WindowName
-				if WindowName == "NDTools01" or WindowName == "NDTools02" do
+				if findItem remove_tool_name WindowName != 0 do
 				(
 					--temp.ParentNode.RemoveChild(temp)
 					append temp_dele_node temp
-				)
-				if WindowName == "NDTools02" do
-				(
-					append temp_dele_node temp
-					--temp.ParentNode.RemoveChild(temp)
-				)
-				if WindowName == "ND_Animation_Layers" do
-				(
-					append temp_dele_node temp
-					--temp.ParentNode.RemoveChild(temp)
 				)
 
 			)
@@ -155,8 +147,75 @@ rollout mergaNDToolsBar "天晴动作脚本工具条 【0.2】" width:420 height
 		)catch(messageBox "好像是没安装天晴动作脚本工具组")
 		*/
 	)
-	
-	
+
+	-- 删除 NDBox 下由脚本添加的菜单项（兼容 Max 2024- / 2025+）
+	fn removeNDBoxMenuItems =
+	(
+		-- 优先用 NDTools.ms 的统一删除（含 Separator 清理）
+		local sharedResult = undefined
+		try (sharedResult = fnRemoveNDBoxMenuItems()) catch()
+		if sharedResult != undefined do return sharedResult
+
+		local removed = false
+		try(callbacks.removeScripts id:#NDBoxMenuItems)catch()
+		try(NDBox_CuiMenusLoaded = false)catch()
+
+		local curMaxVersion = ((maxVersion())[1] / 1000)
+		if curMaxVersion < 27 then
+		(
+			local theMenu = menuMan.findMenu "NDBox"
+			if theMenu != undefined then
+			(
+				local titles = #("天晴动作工具栏设置", "天晴动作工具栏", "Bip动画库")
+				for t in titles do
+				(
+					for i = theMenu.numItems() to 1 by -1 do
+					(
+						local theCurrItem = theMenu.getitem i
+						if theCurrItem != undefined and theCurrItem.gettitle() == t then
+						(
+							theMenu.removeItem theCurrItem
+							removed = true
+						)
+					)
+				)
+				-- 清理连续 / 末尾 Separator
+				try (SRCollapseMenuSeparators theMenu) catch
+				(
+					for i = theMenu.numItems() to 1 by -1 do
+					(
+						local theCurrItem = theMenu.getitem i
+						if theCurrItem != undefined and (try (theCurrItem.getIsSeparator()) catch false) then
+							theMenu.removeItem theCurrItem
+						else
+							exit
+					)
+				)
+				if removed do
+				(
+					menuMan.updateMenuBar()
+					try
+					(
+						local menuFile = menuMan.getMenuFile()
+						if menuFile != undefined and menuFile != "" then
+							menuMan.saveMenuFile menuFile
+					)
+					catch()
+				)
+			)
+		)
+		else
+		(
+			try
+			(
+				local menuMgr = maxops.GetICuiMenuMgr()
+				menuMgr.LoadConfiguration (menuMgr.GetCurrentConfiguration())
+				removed = true
+			)
+			catch()
+		)
+		removed
+	)
 	
 	--------------------------------------------------------------------------------
 	on btn_set_time_linetools changed arg do 
@@ -219,6 +278,21 @@ rollout mergaNDToolsBar "天晴动作脚本工具条 【0.2】" width:420 height
 		)
 
 	)
+
+	on btn_remove_ndbox_menu pressed do
+	(
+		local _ok = queryBox "将清除 NDBox 菜单中由脚本添加的项：\n天晴动作工具栏设置 / Bip动画库\n（含重复项）\n\n若 Startup 仍有 NDTools.ms，重启 Max 后可能再次出现。\n是否继续？" title:"删除NDBox菜单"
+		if _ok do
+		(
+			local done = false
+			try(done = removeNDBoxMenuItems())catch(format "removeNDBoxMenuItems error\n")
+			if done then
+				messageBox "已删除 NDBox 相关菜单项"
+			else
+				messageBox "未找到可删除的 NDBox 菜单项，或当前版本需重启后查看效果"
+		)
+	)
+
 	on btn_fix_ui pressed do
 	(
 		tools_install = ((getdir #maxroot)+"scripts\\NDTools\\tools_install.ms")
