@@ -2,34 +2,57 @@
 --99U:199505
 --E-mail:738746223@qq.com
 --UTF8
+-- 关闭物体材质在视口中的贴图显示
+-- Standard：dxShaderManager.getViewportManager + activateDxStdMat
+-- 其它：showTextureMap
 
-for i in geometry do
+fn ND_SetDxStdMat mat onOff =
 (
-    if i.material != undefined do
-    (
-        o = i.material
-        if classof o == Standardmaterial do (
-            enableHardwareMaterial o false
-            --if o.diffuseMap != undefined do
-            --(
-            --    showTextureMap i.material false
-
-            --)
-        )
-        if classof o == Multimaterial do
-        (
-            for y in o do
-            (
-                try (
-                    enableHardwareMaterial y false
-                    --if y.diffuseMap != undefined do (
-                    --    local temp = y.diffuseMap.fileName
-                    --    showTextureMap y false
-                    --)
-                )catch()
-            )
-        )
-    )
+	if classof mat != Standardmaterial do return false
+	try
+	(
+		local mgr = dxShaderManager.getViewportManager mat
+		if mgr != undefined do
+		(
+			mgr.activateDxStdMat onOff
+			return true
+		)
+	)
+	catch()
+	-- try (mat.DirectX_Manager.dxStdMat = onOff) catch()
+	-- try (enableHardwareMaterial mat onOff) catch()
+	false
 )
 
---actionMan.executeAction 0 "63546"
+fn ND_UnshowMap_OnMat mat =
+(
+	if mat == undefined do return false
+
+	local nMtl = try (getNumSubMtls mat) catch 0
+	for i = 1 to nMtl do
+		ND_UnshowMap_OnMat (getSubMtl mat i)
+
+	if classof mat == Standardmaterial then
+	(
+		ND_SetDxStdMat mat true
+	)
+	else
+	(
+		try (enableHardwareMaterial mat false) catch()
+		try (showTextureMap mat false) catch()
+		local n = try (getNumSubTexmaps mat) catch 0
+		for i = 1 to n do
+		(
+			local tex = getSubTexmap mat i
+			if tex != undefined do
+				try (showTextureMap mat tex false) catch()
+		)
+	)
+
+	true
+)
+
+for i in geometry where i.material != undefined do
+	ND_UnshowMap_OnMat i.material
+
+try (completeRedraw()) catch()
