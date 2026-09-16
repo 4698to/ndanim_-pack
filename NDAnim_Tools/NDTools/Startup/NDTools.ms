@@ -4,7 +4,7 @@
 
 
 
-macroScript NDBoxTool_01 category:"NDBoxTool_01" buttonText: "天晴动作工具栏"
+macroScript NDBoxTool_01 category:"NDBoxTool_01" buttonText: "天晴动作工具栏设置"
 (
 	file_path = (getDir #scripts) + "\\NDToolsShortcut\\加载天晴工具条.ms"
 	if doesFileExist file_path then (
@@ -669,12 +669,71 @@ fn SRFindMenuItem theMenu theTitle =
 	theItem
 )
 
+fn SRIsMenuSeparator theItem =
+(
+	theItem != undefined and (try (theItem.getIsSeparator()) catch false)
+)
+
+-- 删除菜单中所有匹配标题的项（倒序，避免索引错位）
+fn SRRemoveMenuItemsByTitle theMenu theTitle =
+(
+	for i = theMenu.numItems() to 1 by -1 do
+	(
+		local theCurrItem = theMenu.getitem i
+		if theCurrItem != undefined and theCurrItem.gettitle() == theTitle then
+			theMenu.removeItem theCurrItem
+	)
+)
+
+-- 去掉末尾分隔符
+fn SRRemoveTrailingSeparators theMenu =
+(
+	for i = theMenu.numItems() to 1 by -1 do
+	(
+		local theCurrItem = theMenu.getitem i
+		if SRIsMenuSeparator theCurrItem then
+			theMenu.removeItem theCurrItem
+		else
+			exit
+	)
+)
+
+-- 合并连续分隔符，避免反复增删后残留
+fn SRCollapseMenuSeparators theMenu =
+(
+	local prevWasSep = false
+	for i = theMenu.numItems() to 1 by -1 do
+	(
+		local theCurrItem = theMenu.getitem i
+		if SRIsMenuSeparator theCurrItem then
+		(
+			if prevWasSep then
+				theMenu.removeItem theCurrItem
+			else
+				prevWasSep = true
+		)
+		else
+			prevWasSep = false
+	)
+	SRRemoveTrailingSeparators theMenu
+)
+
+-- 删除本脚本管理的 NDBox 菜单项，并清理多余 Separator
+fn SRRemoveNDBoxScriptMenuItems theMenu =
+(
+	SRRemoveMenuItemsByTitle theMenu "Bip动画库"
+	SRRemoveMenuItemsByTitle theMenu "天晴动作工具栏设置"
+	SRRemoveMenuItemsByTitle theMenu "天晴动作工具栏"
+	SRCollapseMenuSeparators theMenu
+)
+
 -- 与 C# GlobalUtility NdBoxMenuGuid 保持一致（Max 2025+）
 global NDBox_CuiMenuGuid = "7C3E9B2A-1F54-4D8E-9A6C-2B8D4E5F6A70"
 global NDBox_CuiSepBipGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E801"
 global NDBox_CuiBipLibGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E802"
 global NDBox_CuiSepToolbarGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E803"
 global NDBox_CuiToolbarGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E804"
+global NDBox_CuiMenusLoaded -- 仅声明，避免 filein 时重置导致反复 LoadConfiguration
 
 -- 创建菜单项（参考 BsKeyTools：高低版本分流，避免 UI 重载期间崩溃）
 fn fnAddNDBoxMenuItems =
@@ -686,23 +745,18 @@ fn fnAddNDBoxMenuItems =
 		(
 			local theFileMenu = menuMan.findMenu "NDBox"
 
-			if (SRFindMenuItem theFileMenu "Bip动画库") == undefined do
-			(
-				local SeparatorItem = menuMan.createSeparatorItem()
-				theFileMenu.addItem SeparatorItem (theFileMenu.numItems() + 1)
+			-- 先删后建：避免重复 Action / Separator 残留
+			SRRemoveNDBoxScriptMenuItems theFileMenu
 
-				local Action = menuMan.createActionItem "NDBoxTool_03" "NDBoxTool_03"
-				theFileMenu.addItem Action (theFileMenu.numItems() + 1)
-			)
+			local SeparatorItem = menuMan.createSeparatorItem()
+			theFileMenu.addItem SeparatorItem (theFileMenu.numItems() + 1)
+			local Action = menuMan.createActionItem "NDBoxTool_03" "NDBoxTool_03"
+			theFileMenu.addItem Action (theFileMenu.numItems() + 1)
 
-			if (SRFindMenuItem theFileMenu "天晴动作工具栏设置") == undefined do
-			(
-				local SeparatorItem = menuMan.createSeparatorItem()
-				theFileMenu.addItem SeparatorItem (theFileMenu.numItems() + 1)
-
-				local Action = menuMan.createActionItem "NDBoxTool_01" "NDBoxTool_01"
-				theFileMenu.addItem Action (theFileMenu.numItems() + 1)
-			)
+			SeparatorItem = menuMan.createSeparatorItem()
+			theFileMenu.addItem SeparatorItem (theFileMenu.numItems() + 1)
+			Action = menuMan.createActionItem "NDBoxTool_01" "NDBoxTool_01"
+			theFileMenu.addItem Action (theFileMenu.numItems() + 1)
 
 			menuMan.updateMenuBar()
 
@@ -718,6 +772,7 @@ fn fnAddNDBoxMenuItems =
 	else
 	(
 		-- Max 2025+：旧 menuMan API 已移除，走 #cuiRegisterMenus
+		-- 固定 GUID 保证幂等；同一会话只 LoadConfiguration 一次，避免重复重建菜单
 		function callbackNDBoxExtraMenu =
 		(
 			local menuMgr = callbacks.notificationParam()
@@ -729,21 +784,64 @@ fn fnAddNDBoxMenuItems =
 			ndMenu.CreateSeparator NDBox_CuiSepBipGuid
 			ndMenu.CreateAction NDBox_CuiBipLibGuid macroScriptActionTableID "NDBoxTool_03`NDBoxTool_03" title:"Bip动画库"
 			ndMenu.CreateSeparator NDBox_CuiSepToolbarGuid
-			ndMenu.CreateAction NDBox_CuiToolbarGuid macroScriptActionTableID "NDBoxTool_01`NDBoxTool_01" title:"天晴动作工具栏"
+			ndMenu.CreateAction NDBox_CuiToolbarGuid macroScriptActionTableID "NDBoxTool_01`NDBoxTool_01" title:"天晴动作工具栏设置"
 		)
 		callbacks.removeScripts id:#NDBoxMenuItems
 		callbacks.addScript #cuiRegisterMenus callbackNDBoxExtraMenu id:#NDBoxMenuItems
+		if NDBox_CuiMenusLoaded != true then
+		(
+			NDBox_CuiMenusLoaded = true
+			try
+			(
+				local menuMgr = maxops.GetICuiMenuMgr()
+				menuMgr.LoadConfiguration (menuMgr.GetCurrentConfiguration())
+			)
+			catch()
+		)
+	)
+)
+
+-- 供外部调用：仅删除脚本添加的 NDBox 菜单项
+fn fnRemoveNDBoxMenuItems =
+(
+	local curMaxVersion = ((maxVersion())[1] / 1000)
+	try(callbacks.removeScripts id:#NDBoxMenuItems)catch()
+	try(NDBox_CuiMenusLoaded = false)catch()
+
+	if curMaxVersion < 27 then
+	(
+		local theFileMenu = menuMan.findMenu "NDBox"
+		if theFileMenu != undefined then
+		(
+			SRRemoveNDBoxScriptMenuItems theFileMenu
+			menuMan.updateMenuBar()
+			try
+			(
+				local menuFile = menuMan.getMenuFile()
+				if menuFile != undefined and menuFile != "" then
+					menuMan.saveMenuFile menuFile
+			)
+			catch()
+			true
+		)
+		else
+			false
+	)
+	else
+	(
 		try
 		(
 			local menuMgr = maxops.GetICuiMenuMgr()
 			menuMgr.LoadConfiguration (menuMgr.GetCurrentConfiguration())
+			true
 		)
-		catch()
+		catch
+			false
 	)
 )
 
 -- Max >= 27: cuiRegisterMenus（在 fnAddNDBoxMenuItems 内处理）
--- Max < 27: findMenu 判重 + timer 延迟创建 + saveMenuFile
+-- Max < 27: 先删后建 + 清理 Separator + saveMenuFile
 -- 已知限制: 低版本重启后首次切换主题可能崩溃（Max 内部 bug），崩溃后再次启动即恢复
 if ((maxVersion())[1] / 1000) >= 27 then
 (
@@ -752,9 +850,8 @@ if ((maxVersion())[1] / 1000) >= 27 then
 else
 (
 	try(destroydialog _rolNDBoxMenuInit)catch()
-	rollout _rolNDBoxMenuInit "自动创建菜单" width:100 height:30
+	rollout _rolNDBoxMenuInit "" width:1 height:1
 	(
-		label lblInit "正在创建菜单..."
 		timer tmrInit interval:1000 active:true
 		on tmrInit tick do
 		(
@@ -763,5 +860,5 @@ else
 			try(fnAddNDBoxMenuItems())catch()
 		)
 	)
-	createDialog _rolNDBoxMenuInit style:#(#style_toolwindow)
+	createDialog _rolNDBoxMenuInit pos:[-10000,-10000] style:#(#style_toolwindow)
 )
