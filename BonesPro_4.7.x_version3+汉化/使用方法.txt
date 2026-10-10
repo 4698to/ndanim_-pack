@@ -1,0 +1,13 @@
+根据对应版本 拷贝 BonesPro.dlm  BonesPro473_20xx.dlm 到3dmax  xxxx   Plugins文件夹  
+
+Scripts文件夹直接拷贝到max根目录即可      
+
+汉化复制对应版本BonesPro.dlm 到Plugins文件夹  
+
+skin导出导入: 打开3d  运行 Scripts\BonesPro\里面3个脚本 全部运行一遍  然后在使用skin导出导入按钮即可导入导出skin
+
+
+
+
+此版本BPM导入导出不可用  后面应该会有新的破解版本
+破解者：Bizkitlimp    汉化:小胖       
