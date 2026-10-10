@@ -3,11 +3,14 @@
 -- 2021.2.11
 try(destroyDialog create_bone_chain)catch()
 
+global create_bone_chainFloater
+global ND_BoneChainController
+
 rollout create_bone_chain_tools "其他工具" width:200 height:150
 (
 	label lab_01 "仅对Bone有效,锁定解锁选中的Bone"
 	group "锁定曲线" (
-		button btn_lockedTracks_p "锁位置" width:65 height:25 across:3 
+		button btn_lockedTracks_p "锁位置" width:65 height:25 across:3
 		button btn_lockedTracks_r "锁旋转" width:65 height:25
 		button btn_lockedTracks_s "锁缩放" width:65 height:25
 	)
@@ -16,648 +19,786 @@ rollout create_bone_chain_tools "其他工具" width:200 height:150
 		button btn_unlockedTracks_r "解旋转" width:65 height:25
 		button btn_unlockedTracks_s "解缩放" width:65 height:25
 	)
-	fn lockedTracksMan_anim pt types is_locked =
-	(
-		if types == 0 do 
-		(
-			--Path_Constraint
-			if pt.position.controller.classid[1] == 8209 do 
-			(
-				for i = 2 to 4 do 
-				(
-					objtm_anim = pt.position.controller[i]
-					if objtm_anim.controller == undefined do 
-					(
-						objtm_anim.controller = bezier_float ()
-					)					
-					lockedTracksMan.setLocks is_locked #(objtm_anim) #(pt) 1 true
-				)
-			)
+	fn lockedTracksMan_anim pt types is_locked = (
+		if types == 0 and pt.position.controller.classid[1] == 8209 do for i = 2 to 4 do (
+			local objtm_anim = pt.position.controller[i]
+			if objtm_anim.controller == undefined do objtm_anim.controller = bezier_float()
+			lockedTracksMan.setLocks is_locked #(objtm_anim) #(pt) 1 true
 		)
-		--位置
-		if types == 1 do
-		(
-			lockedTracksMan.setLocks is_locked #(pt.position.controller) #(pt) 1 true
-		)
-		--旋转
-		if types == 2 do
-		(
-			lockedTracksMan.setLocks is_locked #(pt.rotation.controller) #(pt) 1 true
-		)
-		--缩放
-		if types == 3 do
-		(
-			lockedTracksMan.setLocks is_locked #(pt.scale.controller) #(pt) 1 true
-		)
+		if types == 1 do lockedTracksMan.setLocks is_locked #(pt.position.controller) #(pt) 1 true
+		if types == 2 do lockedTracksMan.setLocks is_locked #(pt.rotation.controller) #(pt) 1 true
+		if types == 3 do lockedTracksMan.setLocks is_locked #(pt.scale.controller) #(pt) 1 true
 	)
-
-	on btn_lockedTracks_p pressed do
-	(
-		for i in selection do 
-		(
-			--BoneGeometry
-			if i.classid[1] == 683634317 do 
-			(
-				lockedTracksMan_anim i 1 true
-			) 
-		)
-	)
-	on btn_lockedTracks_r pressed do
-	(
-		for i in selection do 
-		(
-			--BoneGeometry
-			if i.classid[1] == 683634317 do 
-			(
-				lockedTracksMan_anim i 2 true
-			) 
-		)
-	)
-	on btn_lockedTracks_s pressed do
-	(
-		for i in selection do 
-		(
-			--BoneGeometry
-			if i.classid[1] == 683634317 do 
-			(
-				lockedTracksMan_anim i 3 true
-			) 
-		)
-	)
-
-	on btn_unlockedTracks_p pressed do
-	(
-		for i in selection do 
-		(
-			--BoneGeometry
-			if i.classid[1] == 683634317 do 
-			(
-				lockedTracksMan_anim i 1 false
-			) 
-		)
-	)
-	on btn_unlockedTracks_r pressed do
-	(
-		for i in selection do 
-		(
-			--BoneGeometry
-			if i.classid[1] == 683634317 do 
-			(
-				lockedTracksMan_anim i 2 false
-			) 
-		)
-	)
-	on btn_unlockedTracks_s pressed do
-	(
-		for i in selection do 
-		(
-			--BoneGeometry
-			if i.classid[1] == 683634317 do 
-			(
-				lockedTracksMan_anim i 3 false
-			) 
-		)
-	)
+	fn setSelectedLocks types is_locked = for obj in selection where obj.classid[1] == 683634317 do lockedTracksMan_anim obj types is_locked
+	on btn_lockedTracks_p pressed do setSelectedLocks 1 true
+	on btn_lockedTracks_r pressed do setSelectedLocks 2 true
+	on btn_lockedTracks_s pressed do setSelectedLocks 3 true
+	on btn_unlockedTracks_p pressed do setSelectedLocks 1 false
+	on btn_unlockedTracks_r pressed do setSelectedLocks 2 false
+	on btn_unlockedTracks_s pressed do setSelectedLocks 3 false
 )
 
 rollout create_bone_chain_info "统计信息" width:200 height:150
 (
-
 	label lab_01 "等待移除的：？" across:2
-	label lab_02 "新增：？" 
+	label lab_02 "新增：？"
 	button btn_get_remove_bones "统计" width:35 height:25
-
 	button btn_get_remove "选择待移除骨骼" width:100 height:25 across:2
 	button btn_get_new "选择新增骨骼" width:100 height:25
-	
 	button btn_dele_all_remove "删除所有待删骨骼" width:200 height:25
-	
 	button btn_remove_new_name "删除新增骨骼命名前缀" width:200 height:25
-		
-
 	local remove_list = #()
 	local meger_list = #()
 	local new_chai_list = #()
-	
-	fn get_bones_change =
-	(
-		remove_list = #()
-		meger_list = #()
-		new_chai_list = #()
-		for i in objects do 
-		(
-			if matchPattern i.name pattern:"Remove_*" do 
-			(
-				append remove_list i 
-			)	
-			if matchPattern i.name pattern:"MergeBone_*" do 
-			(
-				append meger_list i 
-			)
-			if matchPattern i.name pattern:"NewChai_*" do 
-			(
-				append new_chai_list i 
-			)
+	fn get_bones_change = (
+		remove_list=#(); meger_list=#(); new_chai_list=#()
+		for obj in objects do (
+			if matchPattern obj.name pattern:"Remove_*" do append remove_list obj
+			if matchPattern obj.name pattern:"MergeBone_*" do append meger_list obj
+			if matchPattern obj.name pattern:"NewChai_*" do append new_chai_list obj
 		)
-		lab_01.text = "等待移除的：" + (remove_list.count as string )
-		new_count = new_chai_list.count + meger_list.count
-		lab_02.text = "新增：" + (new_count as string )
+		lab_01.text="等待移除的："+(remove_list.count as string)
+		lab_02.text="新增："+((new_chai_list.count+meger_list.count) as string)
 	)
-	fn replace_obj_name _obj replace_name = 
-	(
-		newname = dotNetObject "System.String" _obj.name
-		newname_ = newname.replace replace_name ""
-		_obj.name = newname_
-	)
-	on btn_get_remove_bones pressed do 
-	(
+	fn replace_obj_name obj replace_name = (obj.name=(dotNetObject "System.String" obj.name).replace replace_name "")
+	on btn_get_remove_bones pressed do get_bones_change()
+	on btn_get_remove pressed do (get_bones_change(); select remove_list)
+	on btn_get_new pressed do (get_bones_change(); select meger_list; selectmore new_chai_list)
+	on btn_dele_all_remove pressed do (
 		get_bones_change()
+		if queryBox ("是否确定删除所有待删骨骼？共"+(remove_list.count as string)+" 根") beep:false do try(undo "remove_all_list" on delete remove_list)catch()
 	)
-	on btn_get_remove pressed do 
-	(
-		get_bones_change()
-		select remove_list
-	)
-	on btn_get_new pressed do 
-	(
-		get_bones_change()
-		select meger_list
-		selectmore new_chai_list
-	)
-	on btn_dele_all_remove pressed do 
-	(
-		get_bones_change()
-		msg = "是否确定删除所有待删骨骼？共" + (remove_list.count as string ) + " 根"
-		if queryBox msg beep:false do (
-			try(
-				undo "remove_all_list" on (
-					delete remove_list
-				)
-			)catch()
-		)
-	)
-	on btn_remove_new_name pressed do 
-	(
+	on btn_remove_new_name pressed do (
 		get_bones_change()
 		undo "new_bone_names" on (
-			for i in meger_list do 
-			(
-				replace_obj_name i "MergeBone_"
-			)
-			for i in new_chai_list do 
-			(
-				replace_obj_name i "NewChai_"
-			)
-			_count = meger_list.count + new_chai_list.count 
-			msg = "共修改 " + (_count as string) + "个骨骼的命名,注意检查是否有 Bone 重名"
-			messageBox msg 
+			for obj in meger_list do replace_obj_name obj "MergeBone_"
+			for obj in new_chai_list do replace_obj_name obj "NewChai_"
+			messageBox ("共修改 "+((meger_list.count+new_chai_list.count) as string)+"个骨骼的命名,注意检查是否有 Bone 重名")
 		)
 	)
 )
-rollout create_bone_chain "骨骼链编辑" width:200 height:350
-(
-	group "" (
-		label lab_02 "1. 先按骨骼顺序选中骨骼链" Align:#left 
-		label lab_03 "2. 然后使用 分配、合并 功能" Align:#left
-	)
-	edittext edit_name "Bone名前缀：" text:"Bone_" fieldWidth:85 height:20 
 
-	spinner spn2 "骨骼数量:"  fieldWidth:57 height:16 range:[1,100,10] type:#integer scale:1 Align:#left 
-	spinner spn_gradient "渐变系数:" fieldWidth:57 height:16 range:[0.1,1.0,0.8] type:#float scale:0.1 Align:#left tooltip:"控制骨骼长度渐变效果，0.1=强烈渐变，1.0=无渐变" 
-	
-	checkbox check_change_child "新骨骼接受旧骨骼子级" checked:true
-	checkbox check_remoe_old_bone "删除旧骨骼"  
-
-	--button btn_reset "撤销" width:120 height:25  tooltip:"删除"
-	label lab_04 ""
-	group "分配骨骼链" (
-		button bnt_reconstruct_chain "重新分配骨骼链" width:120 height:25 
-	)
-	group "骨骼融合" (
-		checkbox check_frist_bone "以第一节为准"
-		button btn_merge_bone "合并骨骼"  width:120 height:25 tooltip:"合并选择骨骼"
-	)
-	label lab_help "738746223@qq.com"
-	local the_curve = undefined
-	local merge_bones = #()
-	local cumulative_distances=#()
-	
-	fn classofobj obj =
+struct ND_BoneChainController_v1 (
+	floater=undefined, model=undefined, faces=undefined, bones=#(), debugShapes=#(), endpointSectionPlanes=#(), previewProfiles=#(), previewFractions=#(), previewMode=1, previewChainCount=8, previewSpreadAlongV=true, previewAxisLength=1.0, previewBoneSize=0.01, previewBoneName="Bone_", sectionDebugMaterial=undefined, updating=false, modelPreviewActive=false,
+	fn setSource sourceModel sourceFaces = 
 	(
-		if classof obj == line or classof obj == SplineShape then
-		(
-			return true
-
-		)else(
-		   return false
-
+		this.model=sourceModel; this.faces=copy sourceFaces; 
+		true
+	),
+	fn beginUpdate = 
+	(
+		_is_ok = false 
+		if this.updating or this.model==undefined or this.faces==undefined or not isValidNode this.model then( 
+			_is_ok = false 
+		)else (this.updating=true; _is_ok = true)
+		_is_ok
+	),
+	fn clearPreview =
+	(
+		for node in this.bones where isValidNode node do delete node
+		for node in this.debugShapes where isValidNode node do delete node
+		this.bones=#()
+		this.debugShapes=#()
+		this.endpointSectionPlanes=#()
+		this.previewProfiles=#()
+		this.previewFractions=#()
+		true
+	),
+	fn finishUpdate newBones = 
+	(
+		if classof newBones == Array then (this.bones = newBones) else (this.bones = #());
+		this.updating =false;
+		true
+	),
+	fn cancelUpdate = (this.updating=false; false),
+	fn get_model_selected_faces model_node = (
+		if not (isKindOf model_node.baseObject Editable_Poly) do (return undefined)
+		local _faces=#{1..(polyOp.getNumFaces model_node)}
+		if subObjectLevel<=0 do return _faces
+		case subObjectLevel of (
+			1: _faces=polyOp.getFacesUsingVert model_node (polyOp.getVertSelection model_node)
+			2: _faces=polyOp.getFacesUsingEdge model_node (polyOp.getEdgeSelection model_node)
+			3: _faces=polyOp.getFacesUsingEdge model_node (polyOp.getBorderSelection model_node)
+			4: _faces=polyOp.getFaceSelection model_node
+			5: _faces=polyOp.getElementsUsingFace model_node (polyOp.getFaceSelection model_node)
+			default: _faces=polyOp.getFaceSelection model_node
 		)
-		
-	)
-	fn change_name_tag _objs _name = 
-	(
-		for i in _objs do
-		(
-			if not (matchPattern i.name pattern:(_name+"*")) then (
-				i.name = _name + i.name 
+		_faces
+	),
+	fn make_selected_faces_mesh model_node selected_faces = (
+		if selected_faces==undefined or selected_faces.numberSet==0 do (return undefined)
+		local vertex_map = for i=1 to (polyOp.getNumVerts model_node) collect 0; 
+		local _verts=#(); local _faces=#()
+		for fi in selected_faces do (
+			local remapped=#()
+			for vi in (polyOp.getFaceVerts model_node fi) do (
+				if vertex_map[vi]==0 do (
+					append _verts (polyOp.getVert model_node vi);
+					vertex_map[vi]= _verts.count
+				); 
+				append remapped vertex_map[vi]
+			)
+			for i=2 to remapped.count-1 do (append _faces [remapped[1],remapped[i],remapped[i+1]])
+		)
+		if _faces.count==0 do (return undefined)
+		local subset=mesh vertices:_verts faces:_faces; 
+		subset.transform=model_node.transform
+		#(subset,for v in _verts collect (v*model_node.transform),_faces)
+	),
+	fn get_skirt_axis_basis model_node vertices = (
+		local mean=[0,0,0]; for p in vertices do mean+=p; mean/=vertices.count
+		local axis=normalize model_node.transform.row3
+		if length axis<0.0001 do return undefined
+		local bv=model_node.transform.row1-axis*(dot model_node.transform.row1 axis)
+		if length bv<0.0001 do (
+			local ref=if abs(dot axis [0,1,0])>0.95 then [1,0,0] else [0,1,0]
+			bv=cross axis ref
+		)
+		bv=normalize bv
+		local bw=normalize(cross axis bv)
+		if dot bw model_node.transform.row2<0 do (bv=-bv; bw=-bw)
+		#(mean,axis,bv,bw)
+	),
+	fn get_main_axis_basis vertices = (
+		local mean=[0,0,0]; for p in vertices do mean+=p; mean/=vertices.count
+		local xx=0.0; local yy=0.0; local zz=0.0; local xy=0.0; local xz=0.0; local yz=0.0
+		for p in vertices do (local d=p-mean; xx+=d.x*d.x; yy+=d.y*d.y; zz+=d.z*d.z; xy+=d.x*d.y; xz+=d.x*d.z; yz+=d.y*d.z)
+		local start=[0,0,0]; local maxSq=0.0
+		for p in vertices do (local d=p-mean; local ds=dot d d; if ds>maxSq do (maxSq=ds; start=d))
+		if maxSq<=0.000001 do return undefined
+		local axis=normalize start
+		for i=1 to 32 do (local n=[xx*axis.x+xy*axis.y+xz*axis.z,xy*axis.x+yy*axis.y+yz*axis.z,xz*axis.x+yz*axis.y+zz*axis.z]; if length n>0.0001 do axis=normalize n)
+		if axis.z<0 or (abs axis.z<0.05 and axis.x<0) do axis=-axis
+		local ref=[0,0,1]; if abs(dot axis ref)>0.95 do ref=[0,1,0]
+		local v=normalize(cross axis ref); #(mean,axis,v,normalize(cross axis v))
+	),
+	fn get_slice_profile projected_vertices triangle_faces planePoint planeNormal frameV frameW = (
+		local points=#()
+		for face in triangle_faces do for e=1 to 3 do (
+			local n=if e==3 then 1 else e+1
+			local p1=projected_vertices[face[e] as integer]
+			local p2=projected_vertices[face[n] as integer]
+			local d1=dot (p1-planePoint) planeNormal
+			local d2=dot (p2-planePoint) planeNormal
+			if abs d1<0.0001 and abs d2<0.0001 then (
+				append points #(dot (p1-planePoint) frameV,dot (p1-planePoint) frameW)
+				append points #(dot (p2-planePoint) frameV,dot (p2-planePoint) frameW)
+			) else if ((d1<=0 and d2>=0) or (d1>=0 and d2<=0)) and abs(d1-d2)>0.0001 do (
+				local hit=p1+(p2-p1)*(d1/(d1-d2))
+				append points #(dot (hit-planePoint) frameV,dot (hit-planePoint) frameW)
 			)
 		)
-	)
-	fn change_name_remove _objs = 
-	(
-		change_name_tag _objs "Remove_"
-	)
-	fn change_name_merge _objs = 
-	(
-		change_name_tag _objs "MergeBone_"
-	)
-
-	fn change_children_new_parent _obj _new_parnet = 
-	(
-		for i in _obj.children do 
-		(
-			i.parent = _new_parnet 
+		if points.count==0 do return undefined
+		local minv=points[1][1]; local maxv=minv; local minw=points[1][2]; local maxw=minw
+		for p in points do (minv=amin #(minv,p[1]); maxv=amax #(maxv,p[1]); minw=amin #(minw,p[2]); maxw=amax #(maxw,p[2]))
+		#((minv+maxv)*0.5,(minw+maxw)*0.5,(maxv-minv)*0.5,(maxw-minw)*0.5,points)
+	),
+	fn create_chains_from_profiles profiles mode chainCount spreadAlongV size namePrefix fractions = (
+		local all=#()
+		for c=1 to chainCount do (
+			local angle=(c-1)*360.0/chainCount
+			local joints=#()
+			local tag=if mode==1 then "Skirt_" else "Ribbon_"
+			local radialDirection=undefined
+			if mode==1 then (
+				joints=this.get_skirt_chain_points profiles angle
+				local mid=profiles[(ceil (profiles.count/2.0)) as integer]
+				radialDirection=normalize(mid[2]*(cos angle)+mid[3]*(sin angle))
+			) else (
+				local offsetRatio=if chainCount==1 then 0.0 else -0.7+1.4*((c-1) as float)/(chainCount-1)
+				joints=this.get_ribbon_chain_points profiles offsetRatio spreadAlongV
+			)
+			joints=this.resample_points_by_arc_length joints fractions
+			local chainBones=this.create_model_chain joints size (namePrefix+tag+(c as string)) radialDirection
+			for bone in chainBones do append all bone
 		)
+		all
+	),
+	fn applyEndpointPlaneToProfile profile sectionPlane = (
+		local oldWidth=amax #(profile[6],0.0001); local oldLength=amax #(profile[7],0.0001)
+		local widthScale=length sectionPlane.transform.row1
+		local lengthScale=length sectionPlane.transform.row2
+		local row1=normalize sectionPlane.transform.row1
+		local row2=normalize sectionPlane.transform.row2
+		local row3=normalize sectionPlane.transform.row3
+		local newWidth=amax #(sectionPlane.width*widthScale*0.5,0.001)
+		local newLength=amax #(sectionPlane.length*lengthScale*0.5,0.001)
+		local contour=#()
+		if profile[8]!=undefined do for point in profile[8] do append contour #(point[1]*(newWidth/oldWidth),point[2]*(newLength/oldLength))
+		profile[1]=sectionPlane.transform.pos
+		profile[2]=row1
+		profile[3]=row2
+		profile[6]=newWidth
+		profile[7]=newLength
+		profile[8]=contour
+		profile[9]=row3
+		profile
+	),
+	fn get_editable_profiles = (
+		local edited=#()
+		for profile in this.previewProfiles do append edited (for value in profile collect value)
+		if this.endpointSectionPlanes.count==2 do (
+			if isValidNode this.endpointSectionPlanes[1] do this.applyEndpointPlaneToProfile edited[1] this.endpointSectionPlanes[1]
+			if isValidNode this.endpointSectionPlanes[2] do this.applyEndpointPlaneToProfile edited[edited.count] this.endpointSectionPlanes[2]
+		)
+		edited
+	),
+	fn resample_points_by_arc_length points fractions = (
+		if points.count<2 or points.count!=fractions.count do throw "骨骼路径与密度采样数据不匹配"
+		local cumulative=#(0.0); local totalLength=0.0
+		for i=2 to points.count do (totalLength+=distance points[i-1] points[i]; append cumulative totalLength)
+		if totalLength<0.0001 do throw "调整后的骨骼路径长度不足，无法重新分配节数"
+		local result=#()
+		for fraction in fractions do (
+			local target=totalLength*fraction; local segment=points.count-1
+			for i=1 to cumulative.count-1 where target<=cumulative[i+1] do (segment=i; exit)
+			local segmentLength=cumulative[segment+1]-cumulative[segment]
+			local t=if segmentLength>0.0001 then (target-cumulative[segment])/segmentLength else 0.0
+			append result (points[segment]+(points[segment+1]-points[segment])*t)
+		)
+		result
+	),
+	fn get_profile_radius profile angle = (
+		local contour=profile[8]
+		if contour==undefined or contour.count<2 do return (sqrt ((cos angle*profile[6])^2+(sin angle*profile[7])^2))
+		local lowerAngle=undefined; local upperAngle=undefined; local lowerRadius=0.0; local upperRadius=0.0; local lowerGap=360.0; local upperGap=360.0
+		for point in contour do (
+			local dy=point[1]; local dz=point[2]
+			local pointAngle=atan2 dz dy; local delta=pointAngle-angle
+			while delta>180 do delta-=360
+			while delta< -180 do delta+=360
+			local radius=sqrt (dy*dy+dz*dz)
+			if delta<=0 do (
+				local gap=abs delta
+				if gap<lowerGap-2.0 then (lowerGap=gap; lowerAngle=delta; lowerRadius=radius)
+				else if abs(gap-lowerGap)<=2.0 do lowerRadius=amax #(lowerRadius,radius)
+			)
+			if delta>=0 do (
+				local gap=abs delta
+				if gap<upperGap-2.0 then (upperGap=gap; upperAngle=delta; upperRadius=radius)
+				else if abs(gap-upperGap)<=2.0 do upperRadius=amax #(upperRadius,radius)
+			)
+		)
+		if lowerAngle==undefined do return upperRadius
+		if upperAngle==undefined do return lowerRadius
+		if abs(lowerAngle)+abs(upperAngle)<0.0001 do return ((lowerRadius+upperRadius)*0.5)
+		(lowerRadius*upperAngle+upperRadius*abs lowerAngle)/(abs lowerAngle+upperAngle)
+	),
+	fn get_skirt_chain_points profiles angle = (
+		local joints=#()
+		for profile in profiles do (
+			local radius=this.get_profile_radius profile angle
+			append joints (profile[1]+profile[2]*(cos angle*radius)+profile[3]*(sin angle*radius))
+		)
+		joints
+	),
+	fn get_ribbon_chain_points profiles offsetRatio spreadAlongV = (
+		local joints=#()
+		for profile in profiles do (
+			local offset=offsetRatio*(if spreadAlongV then profile[6] else profile[7])
+			local point=profile[1]
+			if spreadAlongV then point+=profile[2]*offset else point+=profile[3]*offset
+			append joints point
+		)
+		joints
+	),
 
-	)
-	
-	fn createBoneform_tm tmlist is_end_bone width height =
-	(
-		local t_bones = #()
-		for s=1 to tmlist.count do
-		(
-			start_tm = tmlist[s]
-			end_tm = tmlist[s + 1]
-			if s < tmlist.count then
+	fn create_model_chain points size chain_name radial_direction = (
+		local result=#(); local parent=undefined; local previousUp=undefined
+		if points.count<2 do return result
+		for i=1 to points.count-1 do (
+			if distance points[i] points[i+1]>0.000001 do 
 			(
-				local t_b = BoneSys.createBone start_tm.pos end_tm.pos start_tm.row3
-				if edit_name.text.count > 0 do 
-				(
-					t_b.name = uniquename(edit_name.text)
-				) 
-				t_b.width = width * 1.2 
-				t_b.height = height* 1.2 
-				append t_bones t_b
-			)else(
-				if is_end_bone do (
-					local t_b_p = t_bones[(t_bones.count)]
-					local t_b = BoneSys.createBone tmlist[s].pos (tmlist[s].pos * 1.1) t_b_p.dir
-					if edit_name.text.count > 0 do 
-					(
-						t_b.name = uniquename("End_"+edit_name.text)
-					) 
-					t_b.transform = t_b_p.transform
-
-					in coordSys Local move t_b [t_b_p.length,0,0]
-
-					t_b.width = width* 1.2 
-					t_b.height = height* 1.2 
-					t_b.taper = 90
-					t_b.length= (t_b.width + t_b.height)/2
-					t_b.name= uniquename "end"
-					append t_bones t_b
+				local dir=normalize(points[i+1]-points[i]); 
+				local up=undefined
+				if radial_direction!=undefined then (
+					local yAxis=radial_direction-dir*(dot radial_direction dir)
+					if length yAxis>0.0001 do up=normalize(cross dir (normalize yAxis))
+				)
+				if up==undefined do (
+					local reference=if previousUp!=undefined then previousUp else [0,0,1]
+					local projectedReference=reference-dir*(dot reference dir)
+					if length projectedReference<0.0001 do (
+						reference=if abs(dot dir [0,1,0])<0.95 then [0,1,0] else [0,0,1]
+						projectedReference=reference-dir*(dot reference dir)
+					)
+					up=normalize projectedReference
+				)
+				if previousUp!=undefined and dot up previousUp<0 do up=-up
+				previousUp=up
+				local bone=undefined
+				try (
+					bone=BoneSys.createBone points[i] points[i+1] up
+					append result bone
+					bone.name = uniquename (chain_name+"_"+(i as string));
+					bone.width=size; 
+					bone.height=size
+					if parent!=undefined do bone.parent=parent
+					parent=bone
+				) catch (
+					local err = getCurrentException()
+					if result.count>0 do for createdBone in result where isValidNode createdBone do delete createdBone
+					messageBox ("创建骨骼段 "+(i as string)+" 失败："+(err as string))
+					return #()
 				)
 			)
-			if s > 1 then
-			(
-				if isValidNode t_bones[s] do (t_bones[s].parent = t_bones[s - 1])
-				
+		)
+		if result.count>0 do (
+			local lastPoint=points[points.count]
+			local lastBone=result[result.count]
+			local tailLength=amax #(size,lastBone.length*0.25)
+			try (
+				local tailBone=BoneSys.createBone lastPoint (lastPoint+normalize(lastBone.dir)*0.1) lastBone.dir
+				append result tailBone
+				tailBone.transform=lastBone.transform
+				in coordSys Local move tailBone [lastBone.length,0,0]
+				tailBone.length=tailLength
+				tailBone.name=uniquename (chain_name+"_End")
+				tailBone.width=size
+				tailBone.height=size
+				tailBone.taper=90
+				tailBone.parent=lastBone
+			) catch (
+				local err=getCurrentException()
+				for createdBone in result where isValidNode createdBone do delete createdBone
+				messageBox ("创建尾骨失败："+(err as string))
+				return #()
 			)
 		)
-		return t_bones
-	)
-	
-	
-	
-	
-	-- 球面线性插值
-	fn squad_slerp2 q1 q2 t =
-	(
-	    local _dot = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w
-	    if _dot < 0 then
-	    (
-	        --q1 = for i in 1 to 4 collect -q1[i]
-	        q1 = q1 * -1.0
-	        _dot = _dot * -1.0
-	    )
-
-	    local DOT_THRESHOLD = 0.9995
-	    if _dot > DOT_THRESHOLD then
-	    (
-	        -- 如果角度非常小，使用线性插值
-	        --local result = for i in 1 to 4 collect (q1[i] + t * (q2[i] - q1[i]))
-	        --return normalize result
-
-	        result = slerp q1 q2 t 
-	        return result
-	    )
-	    --format "_dot -> %\n" _dot
-
-	    local theta_0 = degtorad (acos _dot) --(clamp _dot -1.0 1.0)
-	    --local sin_theta_0 = sin theta_0
-	    sin_theta_0 = sin (acos _dot)
-
-	    --format "theta_0 -> % ,%\n" theta_0 sin_theta_0
-
-
-	    local theta = theta_0 * t
-	    local sin_theta = sin (radtodeg theta)
-	    local cos_theta = cos (radtodeg theta)
-	    --format "sin_theta -> %, %\n" sin_theta cos_theta
-
-	    local s0 = cos_theta - _dot * sin_theta / sin_theta_0
-	    local s1 = sin_theta / sin_theta_0
-	    --format "s0 -> %, %\n" s0 s1 
-	    
-	    q3 = quat 0 0 0 1 
-	    q3.x = q1.x * s0 + q2.x * s1  
-	    q3.y = q1.y * s0 + q2.y * s1
-	    q3.z = q1.z * s0 + q2.z * s1
-	    q3.w = q1.w * s0 + q2.w * s1
-
-	    --不等同于 (q1 * s0 + q2 *s1) 
-
-	    return (normalize q3) 
-
-	)
-
-	fn find_refine_bone_length_index cumulative_distances target_distance =
-	(
-		-- 找到目标距离在累积距离中的位置
-		local segment_index = 1
-		for j = 1 to cumulative_distances.count do
-		(
-			if target_distance <= cumulative_distances[j] then
-			(
-				segment_index = j
-				return segment_index
+		result
+	),
+	fn create_bones_from_model ui model_node selected_faces segment_control density_control mode_control skirt_control debug_control section_debug_control name_control = (
+		local data=this.make_selected_faces_mesh model_node selected_faces
+		if data==undefined do (messageBox "当前子对象层级没有有效选面，请选择面、元素，或相关的点/边/边界。"; return false)
+		local sample=data[1]; local all=#(); local stage="初始化"
+		try (
+			local verts=data[2]; local tris=data[3]; local bounds=undefined
+			stage="读取模型包围盒"
+			bounds=nodeGetBoundingBox sample (matrix3 1)
+			if bounds==undefined do (delete sample; messageBox "无法读取所选区域的包围盒。"; return false)
+			stage="估算选区主轴"
+			local basis=if mode_control.state==1 and debug_control.state==1 then this.get_skirt_axis_basis model_node verts else this.get_main_axis_basis verts
+			if basis==undefined do (delete sample; messageBox "选区网格范围无效，无法估算骨骼链方向。"; return false)
+			local origin=basis[1]; local axis=basis[2]; local bv=basis[3]; local bw=basis[4]
+			local projected=#()
+			for p in verts do (
+				local d=p-origin; 
+				append projected [dot d axis,dot d bv,dot d bw]
 			)
-		)
-	)
-
-	fn refine_matrix3 tmlist _count _sun_lenght gradient_factor =
-	(
-		--从矩阵列表中 tmlist ，基于平均长度混合权重创建 count 个矩阵
-		if tmlist.count < 2 do return tmlist -- 如果输入矩阵少于2个，直接返回
-		if _count <= 1 do 
-		(
-			-- 当只需要1个矩阵时，使用第一个和最后一个矩阵进行混合
-			local tm1 = tmlist[1]
-			local tm2 = tmlist[tmlist.count]
-			
-			-- 插值位置
-			local pos1 = tm1[4]
-			local pos2 = tm2[4]
-			local new_pos = pos1 --(pos1 + pos2) * 0.5 -- 中点
-			
-			-- 插值旋转（四元数插值）
-			local rot1 = tm1.rotationPart as quat
-			local rot2 = tm2.rotationPart as quat
-			local new_rot = slerp rot1 rot2 0.5 -- 中点插值
-			
-			-- 构造新矩阵
-			local new_tm = matrix3 (new_rot as matrix3).row1 (new_rot as matrix3).row2 (new_rot as matrix3).row3 new_pos
-			return #(new_tm)
-		)
-		
-		-- 计算渐变长度：一节比一节短
-		-- 使用等比数列，第一根骨骼最长，最后一根最短
-		local gradient_lengths = #()
-		local total_gradient_length = 0.0
-		
-		-- 计算等比数列的长度
-		for i = 1 to _count do
-		(
-			local length_factor = pow gradient_factor (i - 1)
-			append gradient_lengths length_factor
-			total_gradient_length += length_factor
-		)
-		
-		-- 根据总长度调整每个骨骼的实际长度
-		local scale_factor = _sun_lenght / total_gradient_length
-		for i = 1 to gradient_lengths.count do
-		(
-			gradient_lengths[i] = gradient_lengths[i] * scale_factor
-		)
-		
-		format "渐变长度: %\n" gradient_lengths
-		
-		-- 计算原始矩阵之间的累积距离
-		local cumulative_distances = #()
-		local total_distance = 0.0
-		for i = 1 to (tmlist.count - 1) do
-		(
-			local dist = distance tmlist[i][4] tmlist[i + 1][4]
-			total_distance += dist
-			append cumulative_distances total_distance
-		)
-		format "%\n" cumulative_distances
-
-		/* target_distance_list = #()
-		-- 为每个目标位置计算混合权重
-		for i = 1 to (_count) do
-		(
-			-- 计算当前目标位置在总距离中的位置
-			local target_distance = i * average_length
-			append target_distance_list target_distance 
-		)
-		format "%\n" target_distance_list */
-
-		local result_matrices = #()
-		local target_distance = 0 
-		format "Bone count -> % , tmlist count -> % , cumulative_distances.count -> %\n" _count tmlist.count cumulative_distances.count
-		-- 为每个目标位置计算混合权重
-		for i = 0 to (_count) do
-		(
-			format "New TM -> %\n" i 
-			
-			-- 计算当前目标位置在总距离中的位置（使用渐变长度）
-			if i == 0 then
-			(
-				target_distance = 0
-			)else(
-				-- 累积渐变长度
-				target_distance = 0
-				for j = 1 to i do
-				(
-					target_distance += gradient_lengths[j]
-				)
-			)   
-			/* 
-				target_distance = average_length  
-			 */
-			-- 找到目标距离在累积距离中的位置
-			local segment_index = 1
-			for j = 1 to cumulative_distances.count do
-			(
-				format "	try -> % , % ,%\n" target_distance cumulative_distances[j] (target_distance - cumulative_distances[j])
-				if target_distance <= cumulative_distances[j] do
-				(
-					segment_index = j 
-					format "	target_distance1 -> % -> %\n" target_distance j 
-					exit
-				)
-				if (abs(target_distance - cumulative_distances[j]) < 0.001) do (
-					segment_index = j 
-					format "	target_distance2 -> % -> %\n" target_distance j 
-				)
+			local umin=projected[1].x; 
+			local umax=umin; 
+			local vmin=projected[1].y; 
+			local vmax=vmin; 
+			local wmin=projected[1].z; 
+			local wmax=wmin
+			for p in projected do (
+				umin=amin #(umin,p.x); umax=amax #(umax,p.x); vmin=amin #(vmin,p.y); 
+				vmax=amax #(vmax,p.y); wmin=amin #(wmin,p.z); wmax=amax #(wmax,p.z)
 			)
-			
-			--format "segment % :: % -> % \n" i target_distance segment_index  
-			-- 确保不超出范围
-			--segment_index = amin#(segment_index, tmlist.count - 1)
-			
-			-- 计算在段内的插值参数
-			local segment_start_dist = if segment_index > 1 then cumulative_distances[segment_index - 1] else 0.0
-			local segment_end_dist = cumulative_distances[segment_index]
-			local segment_length = segment_end_dist - segment_start_dist
-			
-			local local_t = if segment_length > 0.0001 then(
-				(target_distance - segment_start_dist) / segment_length )else( 0.0)
-			
-			-- 限制插值参数在 [0, 1] 范围内
-			local_t = amax#(0.0, amin#(1.0, local_t))
-			
-
-			-- 获取两个矩阵
-			local tm1 = tmlist[segment_index]
-			local tm2 = tmlist[segment_index + 1]
-			
-			-- 插值位置
-			local pos1 = tm1.pos -- 矩阵的平移部分
-			local pos2 = tm2.pos 
-			local new_pos = pos1 + (pos2 - pos1) * local_t
-			format "	local_t: % -> % ,% \n" local_t segment_index (segment_index + 1)
-			-- 插值旋转（四元数插值）
-			local rot1 = tm1.rotation--Part as quat
-			local rot2 = tm2.rotation--Part as quat
-			local new_rot = squad_slerp2 rot1 rot2 local_t -- 球面线性插值
-			
-			new_tm = new_rot as matrix3 
-			new_tm.pos = new_pos
-			-- 构造新矩阵
-			--local new_tm = matrix3 (new_rot as matrix3).row1 (new_rot as matrix3).row2 (new_rot as matrix3).row3 new_pos
-			append result_matrices new_tm
-		)
-		
-		result_matrices -- 返回结果矩阵列表
-	)
-	/* on btn_reset pressed do
-	(
-		try(delete test_bone)catch()
-
-	) */
-	on bnt_reconstruct_chain pressed do 
-	(
-		merge_bones = selection as Array
-		
-		bonestm = #()
-		start_bone = merge_bones[1]
-
-		end_bone = merge_bones[merge_bones.count]
-
-		--所有骨骼的长度
-		sun_lenght = 0 
-		for i in merge_bones do 
-		(
-			append bonestm i.transform 
-			sun_lenght += i.length
-			
-		)
-		
-
-		end_tm = PreTranslate end_bone.transform ([end_bone.length,0,0])
-		append bonestm end_tm
- 
-		new_tms = refine_matrix3 bonestm spn2.value sun_lenght spn_gradient.value 
-		undo "new_bone_chai" on (
-
-			
-			new_merge_bones = createBoneform_tm new_tms true start_bone.width start_bone.height
-			
-			new_merge_bones[1].parent = start_bone.parent 
-			for i in new_merge_bones do 
-			(
-				i.name = uniquename (start_bone.name + "_")
+			local axislen=umax-umin; local fv=(vmin+vmax)*0.5; local fw=(wmin+wmax)*0.5; local frv=(vmax-vmin)*0.5; local frw=(wmax-wmin)*0.5
+			if axislen<=0.001 do (delete sample; messageBox "所选区域沿主轴方向的长度不足，无法创建骨骼链。"; return false)
+			local count=segment_control.value as integer; local ratio=pow 2.0 (-(density_control.value as float)/100.0); local weights=#(); local total=0.0
+			for i=1 to count do (local weight=pow ratio (i-1); append weights weight; total+=weight)
+			local fractions=#(0.0); local accumulated=0.0; for weight in weights do (accumulated+=weight; append fractions (accumulated/total))
+			local profileInset=0.1
+			local profileSpan=0.8
+			local profileFractions=for fraction in fractions collect (profileInset+fraction*profileSpan)
+			stage="计算网格截面"
+			local raw=#()
+			for fraction in profileFractions do (
+				local u=umax-axislen*fraction
+				local p=this.get_slice_profile projected tris [u,fv,fw] [1,0,0] [0,1,0] [0,0,1]
+				append raw p
 			)
-			change_name_remove merge_bones
-			change_name_tag new_merge_bones "NewChai_"
-		)
-	)
-	on btn_merge_bone pressed do 
-	(
-		
-		merge_bones = selection as Array
-		
-		if merge_bones.count > 1 then 
-		(
-			bonestm = #()
-			start_bone = merge_bones[1]
-			append bonestm (start_bone.transform)
-			
-			end_bone = merge_bones[merge_bones.count]
-			end_tm = PreTranslate end_bone.transform ([end_bone.length,0,0])
-			
-			append bonestm end_tm
-			
-	 		undo "ff_merger_bone" on 
-	 		(
-	 			if check_frist_bone.state then (
-	 				--以第一节为准的合并
-					new_merge_bone = copy start_bone 
-					new_merge_bone.length = distance start_bone.pos end_tm.pos 
-					new_merge_bone.parent = start_bone.parent
-					new_merge_bone.name = "MergeBone_" + start_bone.name 
-				)else(
-					-- 重新创建的合并
-					new_merge_bones = createBoneform_tm bonestm false start_bone.width start_bone.height
-					new_merge_bone = new_merge_bones[1]
-					change_name_merge #(new_merge_bone)
-					new_merge_bone.name ="MergeBone_" + (uniquename (start_bone.name ))
-
+			local validRawCount=0
+			for p in raw where p!=undefined do validRawCount+=1
+			if validRawCount==0 do throw "全局采样未与模型相交，无法建立中心线"
+			if raw[1]==undefined or raw[raw.count]==undefined do throw "头尾参考截面未与模型相交，无法可靠计算端点截面"
+			for i=2 to raw.count-1 where raw[i]==undefined do (
+				local nearest=undefined; local nearestDistance=raw.count+1
+				for j=1 to raw.count where raw[j]!=undefined do (local d=abs(i-j); if d<nearestDistance do (nearest=j; nearestDistance=d))
+				raw[i]=raw[nearest]
+			)
+			if raw.count<2 do throw ("截面采样点不足："+(raw.count as string))
+			local centerline=#()
+			for i=1 to raw.count do append centerline [umax-axislen*profileFractions[i],fv+raw[i][1],fw+raw[i][2]]
+			for pass=1 to 3 do (
+				local nextLine=#()
+				for i=1 to centerline.count do (
+					if i==1 or i==centerline.count then append nextLine centerline[i]
+					else append nextLine ((centerline[i-1]+centerline[i]*2+centerline[i+1])/4)
 				)
-				
-				
-
-				new_merge_bone.parent = start_bone.parent
-				try(
-				if check_change_child.state do (
-					if isValidNode new_merge_bone do (
-						for i in merge_bones do 
-						(
-							
-							for o in i.children do 
-							(
-								if findItem merge_bones o ==0 do (
-									o.parent = new_merge_bone
-								)
-							)
-						)
+				centerline=nextLine
+			)
+			local startGuideU=umax-axislen*0.05
+			local endGuideU=umax-axislen*0.95
+			local startGuideProfile=this.get_slice_profile projected tris [startGuideU,fv,fw] [1,0,0] [0,1,0] [0,0,1]
+			local endGuideProfile=this.get_slice_profile projected tris [endGuideU,fv,fw] [1,0,0] [0,1,0] [0,0,1]
+			local startTangent=if startGuideProfile!=undefined then normalize([startGuideU,startGuideProfile[1],startGuideProfile[2]]-centerline[1]) else normalize(centerline[2]-centerline[1])
+			local endTangent=if endGuideProfile!=undefined then normalize(centerline[centerline.count]-[endGuideU,endGuideProfile[1],endGuideProfile[2]]) else normalize(centerline[centerline.count]-centerline[centerline.count-1])
+			local localFrames=#()
+			local rawProfiles=#()
+			for i=1 to centerline.count do (
+				local tangent=[1,0,0]
+				local blendWeight=0.0
+				if i>1 and i<centerline.count do (
+					local localTangent=normalize(centerline[i+1]-centerline[i-1])
+					if dot localTangent [1,0,0]<0 do localTangent=-localTangent
+					local edgeT=amin #((i-1) as float,(centerline.count-i) as float)/amax #((centerline.count-1) as float,1.0)*2.0
+					edgeT=amax #(0.0,amin #(edgeT,1.0))
+					blendWeight=edgeT*edgeT*(3.0-2.0*edgeT)
+					local blendedTangent=(1.0-blendWeight)*[1,0,0]+blendWeight*localTangent
+					if length blendedTangent>0.0001 do tangent=normalize blendedTangent
+				)
+				local frameV=if i==1 then [0,1,0] else localFrames[i-1][1]-tangent*(dot localFrames[i-1][1] tangent)
+				local globalV=[0,1,0]-tangent*(dot [0,1,0] tangent)
+				if length globalV>0.0001 do (
+					globalV=normalize globalV
+					frameV=frameV*blendWeight+globalV*(1.0-blendWeight)
+				)
+				if length frameV<0.0001 do frameV=cross tangent [0,1,0]
+				frameV=normalize frameV
+				local frameW=normalize(cross tangent frameV)
+				append localFrames #(frameV,frameW,tangent)
+				local samplePoint=centerline[i]
+				local p=this.get_slice_profile projected tris samplePoint tangent frameV frameW
+				if p==undefined do (
+					if i==1 or i==centerline.count do throw ("固定端点截面未与模型相交：第 "+(i as string)+" 个截面")
+					for step=1 to 10 while p==undefined do (
+						local offset=axislen*0.005*step
+					local candidateA=samplePoint+tangent*offset
+					p=this.get_slice_profile projected tris candidateA tangent frameV frameW
+					if p!=undefined then samplePoint=candidateA else (
+						local candidateB=samplePoint-tangent*offset
+						p=this.get_slice_profile projected tris candidateB tangent frameV frameW
+						if p!=undefined do samplePoint=candidateB
+					)
 					)
 				)
-				
-				change_name_remove merge_bones
-
-				if check_remoe_old_bone.state do
-				(
-					try(delete merge_bones)catch()
-					
-				)
-				)catch()
+				if p==undefined do throw ("第 "+(i as string)+" 个局部截面未与模型相交")
+				centerline[i]=samplePoint
+				append rawProfiles p
 			)
-		)else(
-			messageBox "请选择多根连续骨骼"
+			local localRaw=#()
+			for p in rawProfiles do append localRaw p
+			local _smooth=#()
+			for p in localRaw do append _smooth #(p[1],p[2],p[3],p[4],p[5])
+			for pass=1 to 2 do (
+				local _next=#()
+				for i=1 to _smooth.count do (
+					local p=_smooth[i]
+					if i==1 or i==_smooth.count then append _next p
+					else (local a=_smooth[i-1]; local b=_smooth[i+1]; append _next #((a[1]+2*p[1]+b[1])/4,(a[2]+2*p[2]+b[2])/4,(a[3]+2*p[3]+b[3])/4,(a[4]+2*p[4]+b[4])/4,p[5]))
+				)
+				_smooth=_next
+			)
+			local profiles=#()
+			for i=1 to _smooth.count do (
+				local p=_smooth[i]; local contour=#()
+				if p[5]!=undefined do for q in p[5] do append contour #(q[1]-p[1],q[2]-p[2])
+				local frameVWorld=axis*localFrames[i][1].x+bv*localFrames[i][1].y+bw*localFrames[i][1].z
+				local frameWWorld=axis*localFrames[i][2].x+bv*localFrames[i][2].y+bw*localFrames[i][2].z
+				local tangentWorld=axis*localFrames[i][3].x+bv*localFrames[i][3].y+bw*localFrames[i][3].z
+				local center=centerline[i]+localFrames[i][1]*p[1]+localFrames[i][2]*p[2]
+				local centerWorld=origin+axis*center.x+bv*center.y+bw*center.z
+				append profiles #(centerWorld,frameVWorld,frameWWorld,p[1],p[2],p[3],p[4],contour,tangentWorld)
+			)
+
+			this.previewProfiles=#()
+			for profile in profiles do append this.previewProfiles (for value in profile collect value)
+			this.previewFractions=for value in fractions collect value
+			this.previewMode=mode_control.state
+			this.previewChainCount=skirt_control.value as integer
+			this.previewSpreadAlongV=(frv>=frw)
+			this.previewAxisLength=axislen
+			this.previewBoneName=name_control
+			this.endpointSectionPlanes=#()
+			for i=1 to profiles.count do (
+				local p=profiles[i]
+				if section_debug_control.state or i==1 or i==profiles.count do (
+					local sectionPlane=plane name:(uniquename (if i==1 then "ND_SectionStart" else if i==profiles.count then "ND_SectionEnd" else "ND_SectionSamplePlane")) width:(amax #(p[6]*2,0.001)) length:(amax #(p[7]*2,0.001)) widthsegs:1 lengthsegs:1
+					sectionPlane.transform=matrix3 p[2] p[3] p[9] p[1]
+					sectionPlane.wirecolor=if i==1 or i==profiles.count then (color 255 160 0) else (color 0 255 255)
+					append this.debugShapes sectionPlane
+					if i==1 do append this.endpointSectionPlanes sectionPlane
+					if i==profiles.count do append this.endpointSectionPlanes sectionPlane
+				)
+			)
+			local size=(amin #(axislen/2,amax #(frv,frw)/count))*0.08; 
+			if size<0.001 do (size=0.001)
+			this.previewBoneSize=size
+			if profiles.count!=fractions.count or profiles.count<2 do throw ("骨骼点数据数量不匹配：profiles="+(profiles.count as string)+"，fractions="+(fractions.count as string))
+			stage="创建骨骼链"
+			all=this.create_chains_from_profiles profiles mode_control.state skirt_control.value (frv>=frw) size name_control fractions
+			if all.count==0 do format "没有生成骨骼，请确认选区长度和骨骼节数设置。\n"
+			select this.endpointSectionPlanes[1]
+			delete sample
+			all
+		) catch (err = getCurrentException()
+			if isValidNode sample do delete sample
+			for node in all where isValidNode node do delete node
+			messageBox ("创建骨骼链失败（"+stage+"）："+(err as string))
+			false
 		)
+	),
+	fn classofobj obj = (classof obj==line or classof obj==SplineShape),
+	fn change_name_tag objs tag = (for obj in objs do if not(matchPattern obj.name pattern:(tag+"*")) do obj.name=tag+obj.name),
+	fn change_name_remove objs = this.change_name_tag objs "Remove_",
+	fn change_name_merge objs = this.change_name_tag objs "MergeBone_",
+	fn change_children_new_parent obj new_parent = (for child in obj.children do child.parent=new_parent),
+	fn createBoneform_tm tmlist is_end_bone width height name_control = (
+		local result=#()
+		for i=1 to tmlist.count do (
+			if i<tmlist.count then (local b=BoneSys.createBone tmlist[i].pos tmlist[i+1].pos tmlist[i].row3; if name_control.count>0 do b.name=uniquename name_control; b.width=width*1.2; b.height=height*1.2; append result b)
+			else if is_end_bone do (
+				local prev=result[result.count]; 
+				local b=BoneSys.createBone tmlist[i].pos (tmlist[i].pos*1.1) prev.dir;
+				b.transform=prev.transform;
+				in coordSys Local move b [prev.length,0,0];
+				b.width=width*1.2; b.height=height*1.2; b.taper=90; b.length=(b.width+b.height)/2; b.name=uniquename "end"; append result b
+			)
+			if i>1 and i<=result.count do result[i].parent=result[i-1]
+		)
+		result
+	),
+	fn squad_slerp2 q1 q2 t = (
+		local dotValue=q1.x*q2.x+q1.y*q2.y+q1.z*q2.z+q1.w*q2.w
+		if dotValue<0 do (q1=q1*-1.0; dotValue=-dotValue)
+		if dotValue>0.9995 do return (slerp q1 q2 t)
+		local theta0=degtorad(acos dotValue)
+		local sinTheta0=sin(acos dotValue)
+		local theta=theta0*t
+		local sinTheta=sin(radtodeg theta)
+		local cosTheta=cos(radtodeg theta)
+		local s0=cosTheta-dotValue*sinTheta/sinTheta0
+		local s1=sinTheta/sinTheta0
+		local q3=quat 0 0 0 1
+		q3.x=q1.x*s0+q2.x*s1; q3.y=q1.y*s0+q2.y*s1; q3.z=q1.z*s0+q2.z*s1; q3.w=q1.w*s0+q2.w*s1
+		normalize q3
+	),
+	fn find_refine_bone_length_index distances target = (
+		for i=1 to distances.count do if target<=distances[i] do return i
+		undefined
+	),
+	fn refine_matrix3 tmlist count total_length gradient = (
+		if tmlist.count<2 do return tmlist
+		if count<=1 do (local a=tmlist[1]; local b=tmlist[tmlist.count]; local rot=slerp (a.rotationPart as quat) (b.rotationPart as quat) 0.5; local tm=matrix3 (rot as matrix3).row1 (rot as matrix3).row2 (rot as matrix3).row3 a[4]; return #(tm))
+		local lengths=#(); local total=0.0
+		for i=1 to count do (local v=pow gradient (i-1); append lengths v; total+=v)
+		for i=1 to lengths.count do lengths[i]*=total_length/total
+		local distances=#(); local dist=0.0
+		for i=1 to tmlist.count-1 do (dist+=distance tmlist[i][4] tmlist[i+1][4]; append distances dist)
+		local result=#()
+		for i=0 to count do (
+			local target=0.0; for j=1 to i do target+=lengths[j]
+			local index=this.find_refine_bone_length_index distances target
+			if index==undefined or index>=tmlist.count do index=tmlist.count-1
+			local startDistance=if index>1 then distances[index-1] else 0.0
+			local segmentLength=distances[index]-startDistance
+			local t=if segmentLength>0.0001 then amax #(0.0,amin #(1.0,(target-startDistance)/segmentLength)) else 0.0
+			local a=tmlist[index]; local b=tmlist[index+1]
+			local rot=this.squad_slerp2 a.rotation b.rotation t
+			local tm=rot as matrix3; tm.pos=a.pos+(b.pos-a.pos)*t; append result tm
+		)
+		result
+	),
+	fn reconstructChain ui = (
+		local chain=selection as Array; local matrices=#(); local start=chain[1]; local endBone=chain[chain.count]; local total=0.0
+		for bone in chain do (append matrices bone.transform; total+=bone.length)
+		append matrices (PreTranslate endBone.transform [endBone.length,0,0])
+		local refined=this.refine_matrix3 matrices ui.spn2.value total ui.spn_gradient.value
+		undo "new_bone_chai" on (local newBones=this.createBoneform_tm refined true start.width start.height ui.edit_name; newBones[1].parent=start.parent; for bone in newBones do bone.name=uniquename(start.name+"_"); this.change_name_remove chain; this.change_name_tag newBones "NewChai_")
+	),
+	fn mergeChain ui = (
+		local chain=selection as Array
+		if chain.count<=1 then (messageBox "请选择多根连续骨骼"; return false)
+		local start=chain[1]; local endBone=chain[chain.count]; local endTM=PreTranslate endBone.transform [endBone.length,0,0]
+		undo "ff_merger_bone" on (
+			local merged=undefined
+			if ui.check_frist_bone.state then (merged=copy start; merged.length=distance start.pos endTM.pos; merged.parent=start.parent; merged.name="MergeBone_"+start.name)
+			else (local made=this.createBoneform_tm #(start.transform,endTM) false start.width start.height ui.edit_name; merged=made[1]; this.change_name_merge #(merged); merged.name="MergeBone_"+(uniquename start.name))
+			merged.parent=start.parent
+			if ui.check_change_child.state and isValidNode merged do for bone in chain do for child in bone.children where (findItem chain child)==0 do child.parent=merged
+			this.change_name_remove chain
+			if ui.check_remoe_old_bone.state do delete chain
+		)
+	),
+	fn updateModelPreview ui = (
+		if not this.beginUpdate() do return false
+		--try (
+			--with undo off (
+				with redraw off (
+					this.clearPreview(); 
+					is_valid = this.create_bones_from_model ui this.model this.faces ui.sld_model_segments ui.sld_chain_density ui.rb_model_chain ui.sld_skirt_count ui.chk_skirt_axis_debug ui.chk_section_debug "Bone_"
+					this.finishUpdate is_valid
+				)
+			--)
+			redrawViews()
+			true
+		-- ) catch (
+		-- 	err = getCurrentException()
+		-- 	this.cancelUpdate()
+		-- 	messageBox ("模型骨骼链更新失败："+err)
+		-- 	false
+		-- )
+	),
+	fn updateModelChainCountLabel ui = (
+		ui.sld_skirt_count.text=(if ui.rb_model_chain.state==1 then "裙摆骨骼条数: " else "飘带骨骼条数: ")+(ui.sld_skirt_count.value as string)
+	),
+	fn updateModelControls ui = (
+		this.updateModelChainCountLabel ui
+		this.updateModelPreview ui
+	),
+	fn createModelChain ui = (
+		local sourceModel=undefined; local sourceFaces=undefined
+		if selection.count==1 and isKindOf selection[1].baseObject Editable_Poly then (
+			sourceModel=selection[1]
+			sourceFaces=this.get_model_selected_faces sourceModel
+		)
+		if sourceModel==undefined or sourceFaces==undefined or sourceFaces.numberSet==0 then (
+			if this.model!=undefined and isValidNode this.model and this.faces!=undefined and this.faces.numberSet>0 then (
+				sourceModel=this.model
+				sourceFaces=this.faces
+			) else (
+				messageBox "请选择一个 Editable Poly 模型，并选中有效面、元素或子对象区域。"
+				return false
+			)
+		)
+		this.setSource sourceModel sourceFaces
+		this.updateModelPreview ui
+	),
+	fn commitModelChain ui = (
+		if this.bones.count==0 then (messageBox "请先选择模型生成骨骼链预览。"; false)
+		else (
+			local editedProfiles=this.get_editable_profiles()
+			local oldBones=this.bones
+			local newBones=this.create_chains_from_profiles editedProfiles this.previewMode this.previewChainCount this.previewSpreadAlongV this.previewBoneSize this.previewBoneName this.previewFractions
+			if newBones.count==0 then (messageBox "未能根据调整后的首尾截面重建骨骼链。"; false)
+			else (
+				for node in oldBones where isValidNode node do delete node
+				for node in this.debugShapes where isValidNode node do delete node
+				this.bones=newBones
+				this.debugShapes=#()
+				this.endpointSectionPlanes=#()
+				this.previewProfiles=#()
+				this.previewFractions=#()
+				this.model=undefined
+				this.faces=undefined 
+				ui.rb_model_chain.enabled=true
+				ui.chk_skirt_axis_debug.enabled=(ui.rb_model_chain.state==1)
+				ui.chk_section_debug.enabled=true
+				ui.sld_skirt_count.enabled=true
+				ui.sld_model_segments.enabled=true
+				ui.sld_chain_density.enabled=true
+				ui.btn_create_model_chain.enabled=true
+				ui.btn_create_done.enabled=true
+				this.updateModelChainCountLabel ui
+				select newBones
+				this.bones=#()
+				true
+			)
+		)
+	),
+	fn cancel_createModelChain ui = (
+		for node in this.bones where isValidNode node do delete node
+		for node in this.debugShapes where isValidNode node do delete node
+		this.model=undefined
+		this.faces=undefined 
+		this.bones=#()
+		this.debugShapes=#()
+		this.endpointSectionPlanes=#()
+		this.previewProfiles=#()
+		this.previewFractions=#()
+	),
+	fn closeFloater = 
+	(
+		local old= if floater!=undefined then floater else create_bone_chainFloater;
+		if old!=undefined do(
+			try(closeRolloutFloater old)catch();
+		)
+		floater = undefined;
+		create_bone_chainFloater=undefined; true
+	),
+	fn createFloater mainRollout infoRollout toolsRollout modelRollout = 
+	(
+		this.closeFloater(); 
+		this.clearPreview()
+		this.bones=#()
+		floater=newRolloutFloater "骨骼链编辑" 260 850; 
+		create_bone_chainFloater=floater;
+		addRollout modelRollout floater; 
+		addRollout mainRollout floater; 
+		addRollout infoRollout floater; 
+		addRollout toolsRollout floater; 
+		modelRollout.rb_model_chain.enabled=true
+		modelRollout.chk_skirt_axis_debug.enabled=(modelRollout.rb_model_chain.state==1)
+		modelRollout.chk_section_debug.enabled=true
+		modelRollout.sld_skirt_count.enabled=true
+		modelRollout.sld_model_segments.enabled=true
+		modelRollout.sld_chain_density.enabled=true
+		modelRollout.btn_create_model_chain.enabled=true
+		modelRollout.btn_create_done.enabled=true
+		this.updateModelChainCountLabel modelRollout
+		floater
 	)
 )
 
---createDialog create_bone_chain
-try(
-	closeRolloutFloater create_bone_chainFloater
-)
-catch()
+global ND_BoneChainController = ND_BoneChainController_v1()
 
-create_bone_chainFloater = newRolloutFloater "骨骼链编辑" 240 500
-addRollout create_bone_chain create_bone_chainFloater 
-addRollout create_bone_chain_info create_bone_chainFloater
-addRollout create_bone_chain_tools create_bone_chainFloater
+rollout create_bone_chain_model "模型骨骼链" width:240 height:250
+(
+	label lab_model_chain_help "以模型走势采样；橙色首尾截面可移动/旋转/缩放，完成时重建骨骼" height:30
+	radiobuttons rb_model_chain labels:#("裙摆模式", "飘带模式") columns:2
+	checkbox chk_skirt_axis_debug "Debug：局部Z轴（关闭=PCA）" checked:true
+	checkbox chk_section_debug "Debug：显示截面采样平面（青色）" checked:false
+	slider sld_skirt_count "裙摆骨骼条数:" range:[1,64,8] type:#integer ticks:8 
+	--label lab_skirt_count_value "当前数量：8" height:18
+	slider sld_model_segments "每条骨骼节数:" range:[1,50,8] type:#integer ticks:10
+	--label lab_model_segments_value "当前节数：8" height:18
+	--label lab_chain_density_help "头部较短  ←  均匀  →  尾部较短" height:18
+	slider sld_chain_density "骨骼链密度:" range:[-100,100,0] type:#integer ticks:9
+	--label lab_density_value "长度渐变：均匀" height:18
+	button btn_cancel "取消" width:40 height:26 Align:#left across:3 
+	button btn_create_model_chain "选择模型创建骨骼链" width:130 height:26 Align:#center
+	button btn_create_done "完成" width:40 height:26 Align:#right
+
+	on rb_model_chain changed state do (sld_skirt_count.enabled=true; chk_skirt_axis_debug.enabled=(state==1); ND_BoneChainController.updateModelControls create_bone_chain_model)
+	on chk_skirt_axis_debug changed state do ND_BoneChainController.updateModelControls create_bone_chain_model
+	on chk_section_debug changed state do ND_BoneChainController.updateModelControls create_bone_chain_model
+	on sld_skirt_count changed value do (
+		sld_skirt_count.text="裙摆骨骼条数: "+(value as string);
+		ND_BoneChainController.updateModelControls create_bone_chain_model
+	)
+	on sld_model_segments changed value do (
+		sld_model_segments.text="每条骨骼节数: "+(value as string);
+		ND_BoneChainController.updateModelControls create_bone_chain_model
+	)
+	on sld_chain_density changed value do (
+		local d=value as integer; 
+		if d<0 then (sld_chain_density.text="骨骼链密度 "+(abs d as string)+"%") 
+		else if d>0 then (sld_chain_density.text="长度渐变：尾部较短 "+(d as string)+"%") 
+		else (sld_chain_density.text="长度渐变：均匀"); 
+		ND_BoneChainController.updateModelControls create_bone_chain_model
+	)
+	on btn_create_model_chain pressed do ND_BoneChainController.createModelChain create_bone_chain_model
+	on btn_create_done pressed do ND_BoneChainController.commitModelChain create_bone_chain_model
+	on btn_cancel pressed do ND_BoneChainController.cancel_createModelChain create_bone_chain_model
+)
+
+rollout create_bone_chain "骨骼链编辑" width:240 height:530
+(
+	group "原骨骼链编辑" (label lab_02 "1. 先按骨骼顺序选中骨骼链" Align:#left; label lab_03 "2. 然后使用 分配、合并 功能" Align:#left)
+	edittext edit_name "Bone名前缀：" text:"Bone_" fieldWidth:85 height:20
+	spinner spn2 "骨骼数量:" fieldWidth:57 height:16 range:[1,100,10] type:#integer scale:1 Align:#left
+	spinner spn_gradient "渐变系数:" fieldWidth:57 height:16 range:[0.1,1.0,0.8] type:#float scale:0.1 Align:#left tooltip:"控制骨骼长度渐变效果，0.1=强烈渐变，1.0=无渐变"
+	checkbox check_change_child "新骨骼接受旧骨骼子级" checked:true
+	checkbox check_remoe_old_bone "删除旧骨骼"
+	label lab_04 ""
+	group "分配骨骼链" (button bnt_reconstruct_chain "重新分配骨骼链" width:120 height:25)
+	group "骨骼融合" (checkbox check_frist_bone "以第一节为准"; button btn_merge_bone "合并骨骼" width:120 height:25 tooltip:"合并选择骨骼")
+	label lab_help "738746223@qq.com"
+	on bnt_reconstruct_chain pressed do ND_BoneChainController.reconstructChain create_bone_chain
+	on btn_merge_bone pressed do ND_BoneChainController.mergeChain create_bone_chain
+)
+
+ND_BoneChainController.createFloater create_bone_chain create_bone_chain_info create_bone_chain_tools create_bone_chain_model
