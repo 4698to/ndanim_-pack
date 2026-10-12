@@ -654,9 +654,9 @@
           "Path": null,
           "RootType": "MaxRoot",
           "ext": null,
-          "message": null,
-          "hasHelp": false,
-          "HelpUrl": null
+          "message": "常用的柔体飘带计算工具 Spring Magic",
+          "hasHelp": true,
+          "HelpUrl": "https://sundaybox.cc/pages/8ec179/"
         },
         {
           "Name": "导出动画曲线.ms",

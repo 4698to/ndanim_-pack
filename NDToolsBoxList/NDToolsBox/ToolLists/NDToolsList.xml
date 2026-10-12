@@ -460,7 +460,9 @@
           <IsGrouping>false</IsGrouping>
           <Children />
           <RootType>MaxRoot</RootType>
-          <hasHelp>false</hasHelp>
+          <message>常用的柔体飘带计算工具 Spring Magic</message>
+          <hasHelp>true</hasHelp>
+          <HelpUrl>https://sundaybox.cc/pages/8ec179/</HelpUrl>
         </Person>
         <Person>
           <Name>导出动画曲线.ms</Name>
