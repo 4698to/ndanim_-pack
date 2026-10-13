@@ -200,6 +200,22 @@ struct ND_BoneChainController_v1 (
 		for p in points do (minv=amin #(minv,p[1]); maxv=amax #(maxv,p[1]); minw=amin #(minw,p[2]); maxw=amax #(maxw,p[2]))
 		#((minv+maxv)*0.5,(minw+maxw)*0.5,(maxv-minv)*0.5,(maxw-minw)*0.5,points)
 	),
+	fn get_profile_major_axis profile frameV frameW = (
+		if profile==undefined or profile[5].count<3 do return undefined
+		local centerX=0.0; local centerY=0.0
+		for p in profile[5] do (centerX+=p[1]; centerY+=p[2])
+		centerX/=profile[5].count; centerY/=profile[5].count
+		local xx=0.0; local yy=0.0; local xy=0.0
+		for p in profile[5] do (
+			local x=p[1]-centerX; local y=p[2]-centerY
+			xx+=x*x; yy+=y*y; xy+=x*y
+		)
+		local anisotropy=sqrt((xx-yy)^2+(2.0*xy)^2)
+		if anisotropy<amax #((xx+yy)*0.05,0.0001) do return undefined
+		local angle=0.5*(atan2 (2.0*xy) (xx-yy))
+		local axis=frameV*(cos angle)+frameW*(sin angle)
+		if length axis>0.0001 then normalize axis else undefined
+	),
 	fn create_chains_from_profiles profiles mode chainCount spreadAlongV size namePrefix fractions = (
 		local all=#()
 		if mode!=1 and profiles.count>0 do (
@@ -542,16 +558,15 @@ struct ND_BoneChainController_v1 (
 				)
 				centerline=nextLine
 			)
-			local startGuideU=umax-axislen*0.05
-			local endGuideU=umax-axislen*0.95
-			local startGuideProfile=this.get_slice_profile projected tris [startGuideU,fv,fw] [1,0,0] [0,1,0] [0,0,1]
-			local endGuideProfile=this.get_slice_profile projected tris [endGuideU,fv,fw] [1,0,0] [0,1,0] [0,0,1]
-			local startTangent=if startGuideProfile!=undefined then normalize([startGuideU,startGuideProfile[1],startGuideProfile[2]]-centerline[1]) else normalize(centerline[2]-centerline[1])
-			local endTangent=if endGuideProfile!=undefined then normalize(centerline[centerline.count]-[endGuideU,endGuideProfile[1],endGuideProfile[2]]) else normalize(centerline[centerline.count]-centerline[centerline.count-1])
+			local endpointFitCount=amin #(centerline.count,4)
+			local startTangent=normalize(centerline[endpointFitCount]-centerline[1])
+			local endTangent=normalize(centerline[centerline.count]-centerline[centerline.count-endpointFitCount+1])
+			if dot startTangent [1,0,0]<0 do startTangent=-startTangent
+			if dot endTangent [1,0,0]<0 do endTangent=-endTangent
 			local localFrames=#()
 			local rawProfiles=#()
 			for i=1 to centerline.count do (
-				local tangent=[1,0,0]
+				local tangent=if i==1 then startTangent else if i==centerline.count then endTangent else [1,0,0]
 				local blendWeight=0.0
 				if i>1 and i<centerline.count do (
 					local localTangent=normalize(centerline[i+1]-centerline[i-1])
@@ -571,9 +586,18 @@ struct ND_BoneChainController_v1 (
 				if length frameV<0.0001 do frameV=cross tangent [0,1,0]
 				frameV=normalize frameV
 				local frameW=normalize(cross tangent frameV)
-				append localFrames #(frameV,frameW,tangent)
 				local samplePoint=centerline[i]
 				local p=this.get_slice_profile projected tris samplePoint tangent frameV frameW
+				if i==1 and p!=undefined do (
+					local profileAxis=this.get_profile_major_axis p frameV frameW
+					if profileAxis!=undefined do (
+						if dot profileAxis frameV<0 do profileAxis=-profileAxis
+						frameV=normalize(profileAxis-tangent*(dot profileAxis tangent))
+						frameW=normalize(cross tangent frameV)
+						p=this.get_slice_profile projected tris samplePoint tangent frameV frameW
+					)
+				)
+				append localFrames #(frameV,frameW,tangent)
 				if p==undefined do (
 					if i==1 or i==centerline.count do throw ("固定端点截面未与模型相交：第 "+(i as string)+" 个截面")
 					for step=1 to 10 while p==undefined do (
