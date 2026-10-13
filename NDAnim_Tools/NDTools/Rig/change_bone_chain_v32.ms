@@ -202,6 +202,11 @@ struct ND_BoneChainController_v1 (
 	),
 	fn create_chains_from_profiles profiles mode chainCount spreadAlongV size namePrefix fractions = (
 		local all=#()
+		if mode!=1 and profiles.count>0 do (
+			local totalV=0.0; local totalW=0.0
+			for profile in profiles do (totalV+=profile[6]; totalW+=profile[7])
+			spreadAlongV=(totalV>=totalW)
+		)
 		for c=1 to chainCount do (
 			local angle=(c-1)*360.0/chainCount
 			local joints=#()
