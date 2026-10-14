@@ -203,6 +203,22 @@ struct ND_BoneChainController_v1 (
 		for p in points do (minv=amin #(minv,p[1]); maxv=amax #(maxv,p[1]); minw=amin #(minw,p[2]); maxw=amax #(maxw,p[2]))
 		#((minv+maxv)*0.5,(minw+maxw)*0.5,(maxv-minv)*0.5,(maxw-minw)*0.5,points)
 	),
+	fn reproject_slice_profile profile sourcePoint sourceV sourceW targetPoint targetV targetW = (
+		if profile==undefined or profile[5].count<3 do return undefined
+		local center=sourcePoint+sourceV*profile[1]+sourceW*profile[2]
+		local points=#(); local minV=1.0e9; local maxV=-1.0e9; local minW=1.0e9; local maxW=-1.0e9
+		for q in profile[5] do (
+			local worldPoint=sourcePoint+sourceV*q[1]+sourceW*q[2]
+			local offset=worldPoint-targetPoint
+			local v=dot offset targetV; local w=dot offset targetW
+			append points #(v,w)
+			minV=amin #(minV,v); maxV=amax #(maxV,v); minW=amin #(minW,w); maxW=amax #(maxW,w)
+		)
+		local centerOffset=center-targetPoint
+		local centerV=dot centerOffset targetV; local centerW=dot centerOffset targetW
+		local contour=for q in points collect #(q[1]-centerV,q[2]-centerW)
+		#(centerV,centerW,amax #((maxV-minV)*0.5,0.001),amax #((maxW-minW)*0.5,0.001),contour)
+	),
 	fn get_profile_major_axis profile frameV frameW = (
 		if profile==undefined or profile[5].count<3 do return undefined
 		local centerX=0.0; local centerY=0.0
@@ -218,6 +234,38 @@ struct ND_BoneChainController_v1 (
 		local angle=0.5*(atan2 (2.0*xy) (xx-yy))
 		local axis=frameV*(cos angle)+frameW*(sin angle)
 		if length axis>0.0001 then normalize axis else undefined
+	),
+	fn align_profile_to_section_axis profile = (
+		local contourPoints=profile[8]
+		if contourPoints==undefined or contourPoints.count<3 do return profile
+		local cx=0.0; local cy=0.0
+		for q in contourPoints do (cx+=q[1]; cy+=q[2])
+		cx/=contourPoints.count; cy/=contourPoints.count
+		local xx=0.0; local yy=0.0; local xy=0.0
+		for q in contourPoints do (local x=q[1]-cx; local y=q[2]-cy; xx+=x*x; yy+=y*y; xy+=x*y)
+		local anisotropy=sqrt((xx-yy)^2+(2.0*xy)^2)
+		if anisotropy<amax #((xx+yy)*0.05,0.0001) do return profile
+		local angle=0.5*(atan2 (2.0*xy) (xx-yy))
+		local newFrameV=profile[2]*(cos angle)+profile[3]*(sin angle)
+		newFrameV=newFrameV-profile[9]*(dot newFrameV profile[9])
+		if length newFrameV<0.0001 do return profile
+		newFrameV=normalize newFrameV
+		if dot newFrameV profile[2]<0 do newFrameV=-newFrameV
+		local newFrameW=normalize(cross profile[9] newFrameV)
+		local minV=1.0e9; local maxV=-1.0e9; local minW=1.0e9; local maxW=-1.0e9
+		local newContour=#()
+		for q in contourPoints do (
+			local offset=profile[2]*q[1]+profile[3]*q[2]
+			local v=dot offset newFrameV; local w=dot offset newFrameW
+			minV=amin #(minV,v); maxV=amax #(maxV,v); minW=amin #(minW,w); maxW=amax #(maxW,w)
+			append newContour #(v,w)
+		)
+		profile[2]=newFrameV
+		profile[3]=newFrameW
+		profile[6]=amax #((maxV-minV)*0.5,0.001)
+		profile[7]=amax #((maxW-minW)*0.5,0.001)
+		profile[8]=newContour
+		profile
 	),
 	fn create_chains_from_profiles profiles mode chainCount spreadAlongV size namePrefix fractions = (
 		local all=#()
@@ -799,37 +847,40 @@ struct ND_BoneChainController_v1 (
 				local frameW=normalize(cross tangent frameV)
 				local samplePoint=centerline[i]
 				local p=this.get_slice_profile projected tris samplePoint tangent frameV frameW
-				if i==1 and p!=undefined do (
+				append localFrames #(frameV,frameW,tangent)
+				if p==undefined do (
+					for step=1 to 10 while p==undefined do (
+						local offset=axislen*0.005*step
+						local candidateA=samplePoint+tangent*offset
+						p=this.get_slice_profile projected tris candidateA tangent frameV frameW
+						if p!=undefined then (samplePoint=candidateA) else (
+							local candidateB=samplePoint-tangent*offset
+							p=this.get_slice_profile projected tris candidateB tangent frameV frameW
+							if p!=undefined do (samplePoint=candidateB)
+						)
+					)
+					if p==undefined and (i==1 or i==centerline.count) and raw[i]!=undefined do (
+						local referencePoint=[umax-axislen*profileFractions[i],fv,fw]
+						p=this.reproject_slice_profile raw[i] referencePoint [0,1,0] [0,0,1] samplePoint frameV frameW
+					)
+				)
+				if p==undefined do throw ("第 "+(i as string)+" 个局部截面未与模型相交")
+				if (i==1 or i==centerline.count) and p[5]!=undefined do (
 					local profileAxis=this.get_profile_major_axis p frameV frameW
 					if profileAxis!=undefined do (
 						if dot profileAxis frameV<0 do profileAxis=-profileAxis
 						frameV=normalize(profileAxis-tangent*(dot profileAxis tangent))
 						frameW=normalize(cross tangent frameV)
 						p=this.get_slice_profile projected tris samplePoint tangent frameV frameW
-					)
-				)
-				append localFrames #(frameV,frameW,tangent)
-				if p==undefined do (
-					if i==1 or i==centerline.count then (
-						if raw[i]!=undefined then (
-							samplePoint=[umax-axislen*profileFractions[i],fv,fw]
-							p=raw[i]
-							localFrames[i]=#([0,1,0],[0,0,1],[1,0,0])
-						) else throw ("固定端点截面未与模型相交：第 "+(i as string)+" 个截面")
-					) else (
-						for step=1 to 10 while p==undefined do (
-							local offset=axislen*0.005*step
-							local candidateA=samplePoint+tangent*offset
-							p=this.get_slice_profile projected tris candidateA tangent frameV frameW
-							if p!=undefined then (samplePoint=candidateA) else (
-								local candidateB=samplePoint-tangent*offset
-								p=this.get_slice_profile projected tris candidateB tangent frameV frameW
-								if p!=undefined do (samplePoint=candidateB)
-							)
+						if p==undefined and raw[i]!=undefined do (
+							local referencePoint=[umax-axislen*profileFractions[i],fv,fw]
+							p=this.reproject_slice_profile raw[i] referencePoint [0,1,0] [0,0,1] samplePoint frameV frameW
 						)
 					)
 				)
-				if p==undefined do throw ("第 "+(i as string)+" 个局部截面未与模型相交")
+				if p==undefined do throw ("第 "+(i as string)+" 个端点主轴截面未与模型相交")
+				local frameIndex=localFrames.count
+				localFrames[frameIndex]=#(frameV,frameW,tangent)
 				centerline[i]=samplePoint
 				append rawProfiles p
 			)
@@ -886,6 +937,14 @@ struct ND_BoneChainController_v1 (
 				local p=profiles[i]
 				local controlIndex=if this.previewIntervention then findItem this.previewControlIndices i else 0
 				local isControl=(controlIndex>0)
+				if isControl do (
+					this.align_profile_to_section_axis p
+					this.previewProfiles[i][2]=p[2]
+					this.previewProfiles[i][3]=p[3]
+					this.previewProfiles[i][6]=p[6]
+					this.previewProfiles[i][7]=p[7]
+					this.previewProfiles[i][8]=for q in p[8] collect #(q[1],q[2])
+				)
 				if not (this.previewSimpleIntervention and not isControl) and (section_debug_control.state or i==1 or i==profiles.count or isControl) do (
 					local planeName="ND_SectionSamplePlane"
 					if isControl then (
