@@ -79,7 +79,7 @@ rollout create_bone_chain_info "统计信息" width:200 height:150
 )
 
 struct ND_BoneChainController_v1 (
-	floater=undefined, model=undefined, faces=undefined, bones=#(), debugShapes=#(), endpointSectionPlanes=#(), interventionPlanes=#(), previewControlIndices=#(), previewIntervention=false, previewProfiles=#(), previewFractions=#(), previewProfileFractions=#(), previewStartRatio=0.1, previewEndRatio=0.9, ratioSyncing=false, previewMode=1, previewChainCount=8, previewSpreadAlongV=true, previewAxisLength=1.0, previewBoneSize=0.01, previewBoneName="Bone_", sectionDebugMaterial=undefined, updating=false, modelPreviewActive=false, reconstructPreviewActive=false, reconstructSource=#(), reconstructMatrices=#(), reconstructLength=0.0, reconstructParent=undefined, reconstructWidth=0.0, reconstructHeight=0.0, reconstructStartName="",
+	floater=undefined, model=undefined, faces=undefined, bones=#(), debugShapes=#(), endpointSectionPlanes=#(), interventionPlanes=#(), previewControlIndices=#(), previewIntervention=false, previewSimpleIntervention=false, previewProfiles=#(), previewFractions=#(), previewProfileFractions=#(), previewStartRatio=0.1, previewEndRatio=0.9, ratioSyncing=false, previewMode=1, previewChainCount=8, previewSpreadAlongV=true, previewAxisLength=1.0, previewBoneSize=0.01, previewBoneName="Bone_", sectionDebugMaterial=undefined, updating=false, interventionPreviewDirty=false, modelPreviewActive=false, reconstructPreviewActive=false, reconstructSource=#(), reconstructMatrices=#(), reconstructLength=0.0, reconstructParent=undefined, reconstructWidth=0.0, reconstructHeight=0.0, reconstructStartName="",
 	fn setSource sourceModel sourceFaces = 
 	(
 		this.model=sourceModel; this.faces=copy sourceFaces; 
@@ -103,6 +103,9 @@ struct ND_BoneChainController_v1 (
 		this.interventionPlanes=#()
 		this.previewControlIndices=#()
 		this.previewIntervention=false
+		this.previewSimpleIntervention=false
+		this.interventionPreviewDirty=false
+		try(create_bone_chain_model.tmr_intervention_refresh.active=false)catch()
 		this.previewProfiles=#()
 		this.previewFractions=#()
 		this.previewProfileFractions=#()
@@ -230,15 +233,28 @@ struct ND_BoneChainController_v1 (
 			local radialDirection=undefined
 			if mode==1 then (
 				joints=this.get_skirt_chain_points profiles angle
-				local mid=profiles[(ceil (profiles.count/2.0)) as integer]
-				radialDirection=normalize(mid[2]*(cos angle)+mid[3]*(sin angle))
+				radialDirection=this.sample_skirt_radial_directions profiles angle
 			) else (
 				local offsetRatio=if chainCount==1 then 0.0 else -0.7+1.4*((c-1) as float)/(chainCount-1)
 				joints=this.get_ribbon_chain_points profiles offsetRatio spreadAlongV
 			)
 			joints=this.resample_points_by_arc_length joints fractions
+			if mode==1 do radialDirection=this.resample_vectors_by_arc_length (this.get_skirt_chain_points profiles angle) radialDirection fractions
 			if mode!=1 do (
-				if this.previewIntervention and this.previewProfileFractions.count==profiles.count then (
+				if this.previewIntervention and this.previewSimpleIntervention then (
+					radialDirection=#()
+					for fraction in fractions do (
+						local profilePosition=fraction*(profiles.count-1)+1
+						local profileSegment=amin #((floor profilePosition) as integer,profiles.count-1)
+						local t=profilePosition-profileSegment
+						local startProfile=profiles[profileSegment]; local endProfile=profiles[profileSegment+1]
+						local sectionDirection=(if spreadAlongV then startProfile[2] else startProfile[3])*(1.0-t)+(if spreadAlongV then endProfile[2] else endProfile[3])*t
+						local sectionNormal=startProfile[9]*(1.0-t)+endProfile[9]*t
+						if length sectionDirection>0.0001 and length sectionNormal>0.0001 then (
+							append radialDirection (normalize(normalize sectionDirection*0.75+normalize sectionNormal*0.25))
+						) else append radialDirection (if length sectionDirection>0.0001 then normalize sectionDirection else sectionNormal)
+					)
+				) else if this.previewIntervention and this.previewProfileFractions.count==profiles.count then (
 					radialDirection=#()
 					for fraction in fractions do (
 						local profileFraction=this.previewProfileFractions[1]+fraction*(this.previewProfileFractions[this.previewProfileFractions.count]-this.previewProfileFractions[1])
@@ -276,8 +292,9 @@ struct ND_BoneChainController_v1 (
 		local row1=normalize sectionPlane.transform.row1
 		local row2=normalize sectionPlane.transform.row2
 		local row3=normalize sectionPlane.transform.row3
-		local newWidth=amax #(sectionPlane.width*widthScale*0.5,0.001)
-		local newLength=amax #(sectionPlane.length*lengthScale*0.5,0.001)
+		local isEllipseControl=isProperty sectionPlane.baseObject #radius
+		local newWidth=if isEllipseControl then amax #(widthScale,0.001) else amax #(sectionPlane.width*widthScale*0.5,0.001)
+		local newLength=if isEllipseControl then amax #(lengthScale,0.001) else amax #(sectionPlane.length*lengthScale*0.5,0.001)
 		local contour=#()
 		if profile[8]!=undefined do for point in profile[8] do append contour #(point[1]*(newWidth/oldWidth),point[2]*(newLength/oldLength))
 		profile[1]=sectionPlane.transform.pos
@@ -302,27 +319,32 @@ struct ND_BoneChainController_v1 (
 				append controlProfiles profile
 			)
 			for i=1 to edited.count do (
-				local segment=if i<=controlIndices[2] then 1 else 2
-				local aIndex=controlIndices[segment]; local bIndex=controlIndices[segment+1]
-				local t=(this.previewProfileFractions[i]-this.previewProfileFractions[aIndex])/(this.previewProfileFractions[bIndex]-this.previewProfileFractions[aIndex])
-				t=t*t*(3.0-2.0*t)
-				local original=edited[i]; local a=controlProfiles[segment]; local b=controlProfiles[segment+1]
-				local baseA=this.previewProfiles[aIndex]; local baseB=this.previewProfiles[bIndex]
-				original[1]+=(a[1]-baseA[1])*(1.0-t)+(b[1]-baseB[1])*t
-				local tangent=original[9]+((a[9]-baseA[9])*(1.0-t)+(b[9]-baseB[9])*t)
-				if length tangent>0.0001 do tangent=normalize tangent
-				local frameV=original[2]+((a[2]-baseA[2])*(1.0-t)+(b[2]-baseB[2])*t)
-				frameV=frameV-tangent*(dot frameV tangent)
-				if length frameV>0.0001 then (frameV=normalize frameV) else (frameV=original[2])
-				local frameW=normalize(cross tangent frameV)
-				if dot frameW original[3]<0 do (frameV=-frameV; frameW=-frameW)
-				original[2]=frameV; original[3]=frameW; original[9]=tangent
-				for field in #(4,5,6,7) do original[field]+=(a[field]-baseA[field])*(1.0-t)+(b[field]-baseB[field])*t
-				local scaleV=original[6]/amax #(this.previewProfiles[i][6],0.0001)
-				local scaleW=original[7]/amax #(this.previewProfiles[i][7],0.0001)
-				local contour=#()
-				if this.previewProfiles[i][8]!=undefined do for point in this.previewProfiles[i][8] do append contour #(point[1]*scaleV,point[2]*scaleW)
-				original[8]=contour
+				if i==controlIndices[1] then edited[i]=for value in controlProfiles[1] collect value
+				else if i==controlIndices[3] then edited[i]=for value in controlProfiles[3] collect value
+				else (
+					local segment=if i<=controlIndices[2] then 1 else 2
+					local aIndex=controlIndices[segment]; local bIndex=controlIndices[segment+1]
+					local t=(this.previewProfileFractions[i]-this.previewProfileFractions[aIndex])/(this.previewProfileFractions[bIndex]-this.previewProfileFractions[aIndex])
+					t=t*t*(3.0-2.0*t)
+					local original=edited[i]; local a=controlProfiles[segment]; local b=controlProfiles[segment+1]
+					local baseA=this.previewProfiles[aIndex]; local baseB=this.previewProfiles[bIndex]
+					local influence=0.65
+					original[1]+=((a[1]-baseA[1])*(1.0-t)+(b[1]-baseB[1])*t)*influence
+					local tangent=original[9]+((a[9]-baseA[9])*(1.0-t)+(b[9]-baseB[9])*t)*influence
+					if length tangent>0.0001 do tangent=normalize tangent
+					local frameV=original[2]+((a[2]-baseA[2])*(1.0-t)+(b[2]-baseB[2])*t)*influence
+					frameV=frameV-tangent*(dot frameV tangent)
+					if length frameV>0.0001 then (frameV=normalize frameV) else (frameV=original[2])
+					local frameW=normalize(cross tangent frameV)
+					if dot frameW original[3]<0 do (frameV=-frameV; frameW=-frameW)
+					original[2]=frameV; original[3]=frameW; original[9]=tangent
+					for field in #(4,5,6,7) do original[field]+=((a[field]-baseA[field])*(1.0-t)+(b[field]-baseB[field])*t)*influence
+					local scaleV=original[6]/amax #(this.previewProfiles[i][6],0.0001)
+					local scaleW=original[7]/amax #(this.previewProfiles[i][7],0.0001)
+					local contour=#()
+					if this.previewProfiles[i][8]!=undefined do for point in this.previewProfiles[i][8] do append contour #(point[1]*scaleV,point[2]*scaleW)
+					original[8]=contour
+				)
 			)
 		) else if this.endpointSectionPlanes.count==2 then (
 			if isValidNode this.endpointSectionPlanes[1] do this.applyEndpointPlaneToProfile edited[1] this.endpointSectionPlanes[1]
@@ -330,8 +352,177 @@ struct ND_BoneChainController_v1 (
 		)
 		edited
 	),
+	fn updateInterventionSamplePlanes profiles = (
+		for node in this.debugShapes where isValidNode node and matchPattern node.name pattern:"ND_SectionSamplePlane*" do (
+			local profileIndex=try ((getUserProp node "NDProfileIndex") as integer) catch (0)
+			if profileIndex>0 and profileIndex<=profiles.count do (
+				local profile=profiles[profileIndex]
+				node.transform=matrix3 profile[2] profile[3] profile[9] profile[1]
+				node.width=amax #(profile[6]*2,0.001)
+				node.length=amax #(profile[7]*2,0.001)
+			)
+		)
+		true
+	),
+	fn refreshInterventionPreview = (
+		if this.modelPreviewActive and this.previewIntervention and not this.updating do (
+			this.updating=true
+			try (
+				local editedProfiles=this.get_editable_profiles()
+				this.updateInterventionSamplePlanes editedProfiles
+				local adjustedBones=this.build_model_chains editedProfiles this.previewMode this.previewChainCount this.previewSpreadAlongV this.previewBoneSize this.previewBoneName this.previewFractions
+				for node in this.bones where isValidNode node do delete node
+				this.bones=adjustedBones
+				this.interventionPreviewDirty=false
+			) catch (format "刷新椭圆截面预览失败：%\n" (getCurrentException()))
+			this.updating=false
+			redrawViews()
+		)
+		true
+	),
+	fn create_ellipse_control profile controlIndex = (
+		local controlSuffix=if controlIndex==1 then "Start" else if controlIndex==2 then "Middle" else "End"
+		local controlName="ND_Section"+controlSuffix
+		local sectionCurve=circle name:(uniquename controlName) radius:1.0
+		sectionCurve.transform=matrix3 (profile[2]*profile[6]) (profile[3]*profile[7]) profile[9] profile[1]
+		sectionCurve.wirecolor=if controlIndex==2 then (color 255 220 0) else (color 255 160 0)
+		when transform sectionCurve changes handleAt: #redrawViews do (
+			if not ND_BoneChainController.updating do (
+				ND_BoneChainController.interventionPreviewDirty=true
+				try (
+					create_bone_chain_model.tmr_intervention_refresh.active=false
+					create_bone_chain_model.tmr_intervention_refresh.active=true
+				) catch()
+			)
+		)
+		sectionCurve
+	),
+	fn get_control_dimensions node = (
+		if isProperty node.baseObject #radius then #(length node.transform.row1,length node.transform.row2) else #(node.width,node.length)
+	),
+	fn restore_control_dimensions node dimensions = (
+		if isProperty node.baseObject #radius then (
+			local tm=node.transform
+			tm.row1=normalize tm.row1*dimensions[1]
+			tm.row2=normalize tm.row2*dimensions[2]
+			node.transform=tm
+		) else (node.width=dimensions[1]; node.length=dimensions[2])
+		true
+	),
+	fn create_ellipse_loft_node vertices faces = (
+		local retainedShapes=#()
+		for node in this.debugShapes do if isValidNode node do (
+			if matchPattern node.name pattern:"ND_EllipseLoftPreview*" then delete node else append retainedShapes node
+		)
+		this.debugShapes=retainedShapes
+		local loftNode = mesh name:(uniquename "ND_EllipseLoftPreview") vertices:vertices faces:faces
+		loftNode.isHidden=true
+		--loftNode.wirecolor=color 80 190 220
+		append this.debugShapes loftNode
+		loftNode
+	),
+	fn interpolate_intervention_value values fractions segment t = (
+		local h=fractions[segment+1]-fractions[segment]
+		local m0=(values[segment+1]-values[segment])/h
+		local m1=m0
+		if segment>1 do m0=(values[segment+1]-values[segment-1])/(fractions[segment+1]-fractions[segment-1])
+		if segment+1<values.count do m1=(values[segment+2]-values[segment])/(fractions[segment+2]-fractions[segment])
+		m0*=h; m1*=h
+		local t2=t*t; local t3=t2*t
+		values[segment]*(2*t3-3*t2+1)+m0*(t3-2*t2+t)+values[segment+1]*(-2*t3+3*t2)+m1*(t3-t2)
+	),
+	fn interpolate_intervention_profile controlProfiles controlFractions fraction = (
+		local segment=if fraction<=controlFractions[2] then 1 else 2
+		local span=controlFractions[segment+1]-controlFractions[segment]
+		local t=if span>0.0001 then amax #(0.0,amin #(1.0,(fraction-controlFractions[segment])/span)) else 0.0
+		local profile=for value in controlProfiles[segment] collect value
+		for field in #(1,2,3,4,5,6,7,9) do (
+			local values=for p in controlProfiles collect p[field]
+			profile[field]=this.interpolate_intervention_value values controlFractions segment t
+		)
+		if length profile[9]>0.0001 then (profile[9]=normalize profile[9]) else (profile[9]=controlProfiles[segment][9])
+		profile[2]=profile[2]-profile[9]*(dot profile[2] profile[9])
+		if length profile[2]>0.0001 then (profile[2]=normalize profile[2]) else (profile[2]=controlProfiles[segment][2])
+		profile[3]=normalize(cross profile[9] profile[2])
+		if dot profile[3] controlProfiles[segment][3]<0 do (profile[2]=-profile[2]; profile[3]=-profile[3])
+		local contour=#()
+		for side=0 to 15 do (
+			local angle=360.0*side/16
+			append contour #(profile[6]*cos angle,profile[7]*sin angle)
+		)
+		profile[8]=contour
+		profile
+	),
+	fn get_simple_intervention_profiles = (
+		local controlProfiles=#(); local controlFractions=#()
+		if this.previewControlIndices.count!=3 do throw "简陋干预模式需要三个控制截面"
+		for c=1 to 3 do (
+			local index=this.previewControlIndices[c]
+			local profile=for value in this.previewProfiles[index] collect value
+			if isValidNode this.interventionPlanes[c] do this.applyEndpointPlaneToProfile profile this.interventionPlanes[c]
+			append controlProfiles profile
+			append controlFractions this.previewProfileFractions[index]
+		)
+		local sampled=#(); local subdivisionsPerSpan=16
+		for segment=1 to 2 do for step=0 to subdivisionsPerSpan do (
+			if segment==1 or step>0 do (
+				local fraction=controlFractions[segment]+(controlFractions[segment+1]-controlFractions[segment])*step/subdivisionsPerSpan
+				append sampled (this.interpolate_intervention_profile controlProfiles controlFractions fraction)
+			)
+		)
+		sampled
+	),
+	fn sample_ellipse_loft profiles simpleIntervention:false fractions:undefined = (
+		local controlProfiles=profiles
+		if simpleIntervention do controlProfiles=this.get_simple_intervention_profiles()
+		if controlProfiles.count<2 do return controlProfiles
+		local sideCount=16
+		local loftProfiles=if simpleIntervention then controlProfiles else profiles
+		local vertices=#(); local faces=#()
+		for profile in loftProfiles do (
+			local radiusV=amax #(profile[6],0.001); local radiusW=amax #(profile[7],0.001)
+			for side=0 to sideCount-1 do (
+				local angle=360.0*side/sideCount
+				append vertices (profile[1]+profile[2]*(radiusV*cos angle)+profile[3]*(radiusW*sin angle))
+			)
+		)
+		for ring=1 to loftProfiles.count-1 do for side=0 to sideCount-1 do (
+			local nextSide=(mod (side+1) sideCount) as integer
+			local a=(ring-1)*sideCount+side+1; local b=(ring-1)*sideCount+nextSide+1
+			local c=ring*sideCount+nextSide+1; local d=ring*sideCount+side+1
+			append faces [a,b,c]; append faces [a,c,d]
+		)
+		if not simpleIntervention do (
+			append vertices loftProfiles[1][1]
+			append vertices loftProfiles[loftProfiles.count][1]
+			local startCenter=loftProfiles.count*sideCount+1
+			local endCenter=startCenter+1
+			for side=0 to sideCount-1 do (
+				local nextSide=(mod (side+1) sideCount) as integer
+				append faces [startCenter,nextSide+1,side+1]
+				local endBase=(loftProfiles.count-1)*sideCount
+				append faces [endCenter,endBase+side+1,endBase+nextSide+1]
+			)
+		)
+		this.create_ellipse_loft_node vertices faces
+		local sampled=#()
+		if simpleIntervention then (
+			for profile in loftProfiles do append sampled (for value in profile collect value)
+		) else (
+			for profile in profiles do append sampled (for value in profile collect value)
+		)
+		sampled
+	),
+	fn build_model_chains profiles mode chainCount spreadAlongV size namePrefix fractions = (
+		local sourceProfiles=profiles
+		if this.previewIntervention do (
+			if this.previewSimpleIntervention then sourceProfiles=this.sample_ellipse_loft profiles simpleIntervention:true fractions:fractions
+			else if mode==1 then sourceProfiles=this.sample_ellipse_loft profiles
+		)
+		this.create_chains_from_profiles sourceProfiles mode chainCount spreadAlongV size namePrefix fractions
+	),
 	fn resample_points_by_arc_length points fractions = (
-		if points.count<2 or points.count!=fractions.count do throw "骨骼路径与密度采样数据不匹配"
+		if points.count<2 or fractions.count<2 do throw "骨骼路径或密度采样数据不足，无法重新分配节数"
 		local cumulative=#(0.0); local totalLength=0.0
 		for i=2 to points.count do (totalLength+=distance points[i-1] points[i]; append cumulative totalLength)
 		if totalLength<0.0001 do throw "调整后的骨骼路径长度不足，无法重新分配节数"
@@ -378,6 +569,27 @@ struct ND_BoneChainController_v1 (
 			append joints (profile[1]+profile[2]*(cos angle*radius)+profile[3]*(sin angle*radius))
 		)
 		joints
+	),
+	fn sample_skirt_radial_directions profiles angle = (
+		local directions=#()
+		for profile in profiles do append directions (normalize(profile[2]*(cos angle)+profile[3]*(sin angle)))
+		directions
+	),
+	fn resample_vectors_by_arc_length points vectors fractions = (
+		if points.count!=vectors.count or points.count<2 do return vectors
+		local cumulative=#(0.0); local totalLength=0.0
+		for i=2 to points.count do (totalLength+=distance points[i-1] points[i]; append cumulative totalLength)
+		if totalLength<0.0001 do return vectors
+		local result=#()
+		for fraction in fractions do (
+			local target=totalLength*fraction; local segment=points.count-1
+			for i=1 to cumulative.count-1 where target<=cumulative[i+1] do (segment=i; exit)
+			local span=cumulative[segment+1]-cumulative[segment]
+			local t=if span>0.0001 then (target-cumulative[segment])/span else 0.0
+			local direction=vectors[segment]*(1.0-t)+vectors[segment+1]*t
+			if length direction>0.0001 then append result (normalize direction) else append result vectors[segment]
+		)
+		result
 	),
 	fn get_ribbon_chain_points profiles offsetRatio spreadAlongV = (
 		local joints=#()
@@ -490,7 +702,7 @@ struct ND_BoneChainController_v1 (
 		)
 		result
 	),
-	fn create_bones_from_model ui model_node selected_faces segment_control density_control mode_control skirt_control debug_control section_debug_control intervention_control start_ratio_control end_ratio_control name_control = (
+	fn create_bones_from_model ui model_node selected_faces segment_control density_control mode_control skirt_control debug_control section_debug_control intervention_control simple_intervention_control start_ratio_control end_ratio_control name_control = (
 		local data=this.make_selected_faces_mesh model_node selected_faces
 		if data==undefined do (messageBox "当前子对象层级没有有效选面，请选择面、元素，或相关的点/边/边界。"; return false)
 		local sample=data[1]; local all=#(); local stage="初始化"
@@ -541,8 +753,7 @@ struct ND_BoneChainController_v1 (
 			local validRawCount=0
 			for p in raw where p!=undefined do validRawCount+=1
 			if validRawCount==0 do throw "全局采样未与模型相交，无法建立中心线"
-			if raw[1]==undefined or raw[raw.count]==undefined do throw "头尾参考截面未与模型相交，无法可靠计算端点截面"
-			for i=2 to raw.count-1 where raw[i]==undefined do (
+			for i=1 to raw.count where raw[i]==undefined do (
 				local nearest=undefined; local nearestDistance=raw.count+1
 				for j=1 to raw.count where raw[j]!=undefined do (local d=abs(i-j); if d<nearestDistance do (nearest=j; nearestDistance=d))
 				raw[i]=raw[nearest]
@@ -599,16 +810,23 @@ struct ND_BoneChainController_v1 (
 				)
 				append localFrames #(frameV,frameW,tangent)
 				if p==undefined do (
-					if i==1 or i==centerline.count do throw ("固定端点截面未与模型相交：第 "+(i as string)+" 个截面")
-					for step=1 to 10 while p==undefined do (
-						local offset=axislen*0.005*step
-					local candidateA=samplePoint+tangent*offset
-					p=this.get_slice_profile projected tris candidateA tangent frameV frameW
-					if p!=undefined then samplePoint=candidateA else (
-						local candidateB=samplePoint-tangent*offset
-						p=this.get_slice_profile projected tris candidateB tangent frameV frameW
-						if p!=undefined do samplePoint=candidateB
-					)
+					if i==1 or i==centerline.count then (
+						if raw[i]!=undefined then (
+							samplePoint=[umax-axislen*profileFractions[i],fv,fw]
+							p=raw[i]
+							localFrames[i]=#([0,1,0],[0,0,1],[1,0,0])
+						) else throw ("固定端点截面未与模型相交：第 "+(i as string)+" 个截面")
+					) else (
+						for step=1 to 10 while p==undefined do (
+							local offset=axislen*0.005*step
+							local candidateA=samplePoint+tangent*offset
+							p=this.get_slice_profile projected tris candidateA tangent frameV frameW
+							if p!=undefined then (samplePoint=candidateA) else (
+								local candidateB=samplePoint-tangent*offset
+								p=this.get_slice_profile projected tris candidateB tangent frameV frameW
+								if p!=undefined do (samplePoint=candidateB)
+							)
+						)
 					)
 				)
 				if p==undefined do throw ("第 "+(i as string)+" 个局部截面未与模型相交")
@@ -648,6 +866,7 @@ struct ND_BoneChainController_v1 (
 			this.previewEndRatio=endRatio
 			this.previewMode=mode_control.state
 			this.previewIntervention=intervention_control.state
+			this.previewSimpleIntervention=(intervention_control.state and simple_intervention_control.state)
 			this.previewControlIndices=#()
 			if this.previewIntervention do (
 				if profiles.count<3 do throw "干预模式至少需要 2 节骨骼，才能提供起点、中点、终点三个控制截面"
@@ -667,7 +886,7 @@ struct ND_BoneChainController_v1 (
 				local p=profiles[i]
 				local controlIndex=if this.previewIntervention then findItem this.previewControlIndices i else 0
 				local isControl=(controlIndex>0)
-				if section_debug_control.state or i==1 or i==profiles.count or isControl do (
+				if not (this.previewSimpleIntervention and not isControl) and (section_debug_control.state or i==1 or i==profiles.count or isControl) do (
 					local planeName="ND_SectionSamplePlane"
 					if isControl then (
 						if controlIndex==1 then (planeName="ND_SectionStart")
@@ -677,9 +896,11 @@ struct ND_BoneChainController_v1 (
 						if i==1 then (planeName="ND_SectionStart")
 						else if i==profiles.count then (planeName="ND_SectionEnd")
 					)
-					local sectionPlane=plane name:(uniquename planeName) width:(amax #(p[6]*2,0.001)) length:(amax #(p[7]*2,0.001)) widthsegs:1 lengthsegs:1
-					sectionPlane.transform=matrix3 p[2] p[3] p[9] p[1]
+					local ellipseControl=(this.previewIntervention and isControl)
+					local sectionPlane=if ellipseControl then this.create_ellipse_control p controlIndex else plane name:(uniquename planeName) width:(amax #(p[6]*2,0.001)) length:(amax #(p[7]*2,0.001)) widthsegs:1 lengthsegs:1
+					if not ellipseControl do sectionPlane.transform=matrix3 p[2] p[3] p[9] p[1]
 					sectionPlane.wirecolor=if isControl then (if controlIndex==2 then (color 255 220 0) else (color 255 160 0)) else (color 0 255 255)
+					if not isControl do setUserProp sectionPlane "NDProfileIndex" (i as string)
 					append this.debugShapes sectionPlane
 					if i==1 or i==profiles.count do (append this.endpointSectionPlanes sectionPlane)
 					if isControl do (append this.interventionPlanes sectionPlane)
@@ -690,7 +911,7 @@ struct ND_BoneChainController_v1 (
 			this.previewBoneSize=size
 			if profiles.count!=fractions.count or profiles.count<2 do throw ("骨骼点数据数量不匹配：profiles="+(profiles.count as string)+"，fractions="+(fractions.count as string))
 			stage="创建骨骼链"
-			all=this.create_chains_from_profiles profiles mode_control.state skirt_control.value (frv>=frw) size name_control fractions
+			all=this.build_model_chains profiles mode_control.state skirt_control.value (frv>=frw) size name_control fractions
 			if all.count==0 do format "没有生成骨骼，请确认选区长度和骨骼节数设置。\n"
 			select this.endpointSectionPlanes[1]
 			delete sample
@@ -698,6 +919,10 @@ struct ND_BoneChainController_v1 (
 		) catch (err = getCurrentException()
 			if isValidNode sample do delete sample
 			for node in all where isValidNode node do delete node
+			for node in this.debugShapes where isValidNode node do delete node
+			this.debugShapes=#()
+			this.endpointSectionPlanes=#()
+			this.interventionPlanes=#()
 			messageBox ("创建骨骼链失败（"+stage+"）："+(err as string))
 			false
 		)
@@ -868,29 +1093,30 @@ struct ND_BoneChainController_v1 (
 		if not this.beginUpdate() do return false
 		local savedControlPlanes=#()
 		local oldControlPlanes=if this.previewIntervention then this.interventionPlanes else this.endpointSectionPlanes
-		for planeNode in oldControlPlanes where isValidNode planeNode do append savedControlPlanes #(planeNode.transform,planeNode.width,planeNode.length)
+		for planeNode in oldControlPlanes where isValidNode planeNode do append savedControlPlanes #(planeNode.transform,this.get_control_dimensions planeNode)
 		local oldInterventionMode=this.previewIntervention
 		with redraw off (
 			this.clearPreview()
-			local is_valid=this.create_bones_from_model ui this.model this.faces ui.spn_model_segments ui.sld_chain_density ui.rb_model_chain ui.spn_skirt_count ui.chk_skirt_axis_debug ui.chk_section_debug ui.chk_intervention ui.spn_intervention_start ui.spn_intervention_end "Bone_"
+			local is_valid=this.create_bones_from_model ui this.model this.faces ui.spn_model_segments ui.sld_chain_density ui.rb_model_chain ui.spn_skirt_count ui.chk_skirt_axis_debug ui.chk_section_debug ui.chk_intervention ui.chk_simple_intervention ui.spn_intervention_start ui.spn_intervention_end "Bone_"
 			this.finishUpdate is_valid
 			this.modelPreviewActive=(this.bones.count>0)
 			local newControlPlanes=if this.previewIntervention then this.interventionPlanes else this.endpointSectionPlanes
 			if this.modelPreviewActive and oldInterventionMode==this.previewIntervention and savedControlPlanes.count==newControlPlanes.count do (
+				this.updating=true
 				for i=1 to newControlPlanes.count do (
 					local savedTransform=savedControlPlanes[i][1]
 					local savedPosition=savedTransform.row4
 					if resetControlPlanes and this.previewIntervention and i!=2 do savedPosition=newControlPlanes[i].transform.row4
 					savedTransform.row4=savedPosition
 					newControlPlanes[i].transform=savedTransform
-					newControlPlanes[i].width=savedControlPlanes[i][2]
-					newControlPlanes[i].length=savedControlPlanes[i][3]
+					this.restore_control_dimensions newControlPlanes[i] savedControlPlanes[i][2]
 				)
 				local editedProfiles=this.get_editable_profiles()
-				local adjustedBones=this.create_chains_from_profiles editedProfiles this.previewMode this.previewChainCount this.previewSpreadAlongV this.previewBoneSize this.previewBoneName this.previewFractions
+				local adjustedBones=this.build_model_chains editedProfiles this.previewMode this.previewChainCount this.previewSpreadAlongV this.previewBoneSize this.previewBoneName this.previewFractions
 				for node in this.bones where isValidNode node do delete node
 				this.bones=adjustedBones
 				if newControlPlanes.count>0 do select newControlPlanes[1]
+				this.updating=false
 			)
 		)
 		redrawViews()
@@ -906,7 +1132,7 @@ struct ND_BoneChainController_v1 (
 	fn createModelChain ui = (
 		if this.modelPreviewActive then (
 			local editedProfiles=this.get_editable_profiles()
-			local newBones=this.create_chains_from_profiles editedProfiles this.previewMode this.previewChainCount this.previewSpreadAlongV this.previewBoneSize this.previewBoneName this.previewFractions
+			local newBones=this.build_model_chains editedProfiles this.previewMode this.previewChainCount this.previewSpreadAlongV this.previewBoneSize this.previewBoneName this.previewFractions
 			if newBones.count==0 then (messageBox "未能根据调整后的截面刷新骨骼预览。"; false)
 			else (
 				for node in this.bones where isValidNode node do delete node
@@ -940,17 +1166,20 @@ struct ND_BoneChainController_v1 (
 		else (
 			local editedProfiles=this.get_editable_profiles()
 			local oldBones=this.bones
-			local newBones=this.create_chains_from_profiles editedProfiles this.previewMode this.previewChainCount this.previewSpreadAlongV this.previewBoneSize this.previewBoneName this.previewFractions
+			local newBones=this.build_model_chains editedProfiles this.previewMode this.previewChainCount this.previewSpreadAlongV this.previewBoneSize this.previewBoneName this.previewFractions
 			if newBones.count==0 then (messageBox "未能根据调整后的首尾截面重建骨骼链。"; false)
 			else (
 				for node in oldBones where isValidNode node do delete node
 				for node in this.debugShapes where isValidNode node do delete node
+				this.interventionPreviewDirty=false
+				try(create_bone_chain_model.tmr_intervention_refresh.active=false)catch()
 				this.bones=newBones
 				this.debugShapes=#()
 				this.endpointSectionPlanes=#()
 				this.interventionPlanes=#()
 				this.previewControlIndices=#()
 				this.previewIntervention=false
+				this.previewSimpleIntervention=false
 				this.previewProfiles=#()
 				this.previewFractions=#()
 				this.previewProfileFractions=#()
@@ -961,6 +1190,7 @@ struct ND_BoneChainController_v1 (
 				ui.rb_model_chain.enabled=true
 				ui.chk_skirt_axis_debug.enabled=(ui.rb_model_chain.state==1)
 				ui.chk_section_debug.enabled=true
+				ui.chk_simple_intervention.enabled=ui.chk_intervention.state
 				ui.spn_skirt_count.enabled=true
 				ui.spn_model_segments.enabled=true
 				ui.sld_chain_density.enabled=true
@@ -976,6 +1206,8 @@ struct ND_BoneChainController_v1 (
 	fn cancel_createModelChain ui = (
 		for node in this.bones where isValidNode node do delete node
 		for node in this.debugShapes where isValidNode node do delete node
+		this.interventionPreviewDirty=false
+		try(create_bone_chain_model.tmr_intervention_refresh.active=false)catch()
 		this.model=undefined
 		this.faces=undefined 
 		this.bones=#()
@@ -984,6 +1216,7 @@ struct ND_BoneChainController_v1 (
 		this.interventionPlanes=#()
 		this.previewControlIndices=#()
 		this.previewIntervention=false
+		this.previewSimpleIntervention=false
 		this.previewProfiles=#()
 		this.previewFractions=#()
 		this.previewProfileFractions=#()
@@ -1018,6 +1251,9 @@ struct ND_BoneChainController_v1 (
 		modelRollout.rb_model_chain.enabled=true
 		modelRollout.chk_skirt_axis_debug.enabled=(modelRollout.rb_model_chain.state==1)
 		modelRollout.chk_section_debug.enabled=true
+		modelRollout.spn_intervention_start.enabled=modelRollout.chk_intervention.state
+		modelRollout.spn_intervention_end.enabled=modelRollout.chk_intervention.state
+		modelRollout.chk_simple_intervention.enabled=modelRollout.chk_intervention.state
 		modelRollout.spn_skirt_count.enabled=true
 		modelRollout.spn_model_segments.enabled=true
 		modelRollout.sld_chain_density.enabled=true
@@ -1032,11 +1268,17 @@ global ND_BoneChainController = ND_BoneChainController_v1()
 
 rollout create_bone_chain_model "模型骨骼链" width:240 height:280
 (
-	label lab_model_chain_help "以模型走势采样；可调整首尾截面，或开启干预模式调整首/中/尾三个截面" height:30
+	timer tmr_intervention_refresh "椭圆截面预览刷新" interval:250 active:false
+	label lab_model_chain_help "以模型走势采样；可调整首尾截面"
+	label lab_model_chain_help2 "或开启干预模式调整首/中/尾三个截面"
+
 	radiobuttons rb_model_chain labels:#("裙摆模式", "飘带模式") columns:2
-	checkbox chk_skirt_axis_debug "Debug：局部Z轴（关闭=PCA）" checked:true
-	checkbox chk_section_debug "Debug：显示截面采样平面（青色）" checked:false
-	checkbox chk_intervention "启用截面干预" checked:false
+	
+	checkbox chk_skirt_axis_debug "Debug：局部Z轴" checked:true across:2 tooltip:"局部Z轴（关闭=PCA）" align:#left
+	checkbox chk_section_debug "采样平面" checked:false tooltip:"显示截面采样平面（青色）" align:#right
+
+	checkbox chk_intervention "截面干预" checked:true across:2 tooltip:"调整首/中/尾三个截面" align:#left
+	checkbox chk_simple_intervention "简陋模式" checked:false enabled:false tooltip:"仅用首/中/尾干预截面生成平滑简模和骨骼" align:#right
 	
 	spinner spn_intervention_start "起点:" range:[1,99,5] type:#integer scale:1 fieldWidth:42 across:2 enabled:false align:#left tooltip:"	%比例"
 	spinner spn_intervention_end "终点:" range:[1,100,95] type:#integer scale:1 fieldWidth:42 Align:#right enabled:false align:#right tooltip:"	%比例"
@@ -1054,11 +1296,23 @@ rollout create_bone_chain_model "模型骨骼链" width:240 height:280
 		spn_skirt_count.enabled=true
 		spn_skirt_count.value=if state==2 then 1 else 6
 		chk_skirt_axis_debug.enabled=(state==1)
+		chk_simple_intervention.enabled=chk_intervention.state
 		ND_BoneChainController.updateModelControls create_bone_chain_model
 	)
 	on chk_skirt_axis_debug changed state do ND_BoneChainController.updateModelControls create_bone_chain_model
 	on chk_section_debug changed state do ND_BoneChainController.updateModelControls create_bone_chain_model
-	on chk_intervention changed state do (spn_intervention_start.enabled=state; spn_intervention_end.enabled=state; ND_BoneChainController.updateModelControls create_bone_chain_model)
+	on chk_intervention changed state do (spn_intervention_start.enabled=state; spn_intervention_end.enabled=state; chk_simple_intervention.enabled=state; ND_BoneChainController.updateModelControls create_bone_chain_model)
+	on chk_simple_intervention changed state do ND_BoneChainController.updateModelControls create_bone_chain_model
+	on tmr_intervention_refresh tick do (
+		if ND_BoneChainController.interventionPreviewDirty then (
+			if theHold.Holding() then tmr_intervention_refresh.active=true
+			else (
+				tmr_intervention_refresh.active=false
+				ND_BoneChainController.interventionPreviewDirty=false
+				if ND_BoneChainController.modelPreviewActive and ND_BoneChainController.previewIntervention do ND_BoneChainController.refreshInterventionPreview()
+			)
+		) else tmr_intervention_refresh.active=false
+	)
 	on spn_intervention_start changed value do ND_BoneChainController.updateInterventionRatios create_bone_chain_model true value
 	on spn_intervention_end changed value do ND_BoneChainController.updateInterventionRatios create_bone_chain_model false value
 	on spn_skirt_count changed value do ND_BoneChainController.updateModelControls create_bone_chain_model
