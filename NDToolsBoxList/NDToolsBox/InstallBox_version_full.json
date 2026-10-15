@@ -12,11 +12,11 @@
   "item": [
     {
       "IsEnabled": true,
-      "LastPackTime": "/Date(1791604948676)/",
+      "LastPackTime": "/Date(1791976410641)/",
       "LastWriteTime": "/Date(1760439722342+0800)/",
       "SeriesMax": 2026,
       "SeriesMin": 2013,
-      "abouttext": "天晴工具组资源，蒙皮权重工具更新,修复显示贴图按钮",
+      "abouttext": "天晴工具组资源，蒙皮权重工具修复替换权重BUG,修复显示贴图按钮,",
       "dirpath": "scripts/NDTools",
       "helplink": "https://sundaybox.cc/pages/BipedLib/",
       "isParent": false,
@@ -24,10 +24,10 @@
       "quick": true,
       "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015",
       "selected": true,
-      "sha": "NsitWI5kT/Icb2O7TuT0k6I8nGYzx2acHnpPzF3IQWM=",
+      "sha": "u+at0jQjudGTykExzPdPxBcm08KrSb40xPT8W0YXct0=",
       "targetpath": "/www/wwwroot/default/ndanim_-pack/NDAnim_Tools/NDTools",
       "type": 0,
-      "version": 6.41,
+      "version": 6.51,
       "zipname": "NDTools"
     },
     {
