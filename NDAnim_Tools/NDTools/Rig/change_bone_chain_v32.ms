@@ -79,7 +79,7 @@ rollout create_bone_chain_info "统计信息" width:200 height:150
 )
 
 struct ND_BoneChainController_v1 (
-	floater=undefined, model=undefined, faces=undefined, bones=#(), debugShapes=#(), endpointSectionPlanes=#(), interventionPlanes=#(), previewControlIndices=#(), previewIntervention=false, previewSimpleIntervention=false, previewProfiles=#(), previewFractions=#(), previewProfileFractions=#(), previewStartRatio=0.1, previewEndRatio=0.9, ratioSyncing=false, previewMode=1, previewChainCount=8, previewSpreadAlongV=true, previewAxisLength=1.0, previewBoneSize=0.01, previewBoneName="Bone_", sectionDebugMaterial=undefined, updating=false, interventionPreviewDirty=false, modelPreviewActive=false, reconstructPreviewActive=false, reconstructSource=#(), reconstructMatrices=#(), reconstructLength=0.0, reconstructParent=undefined, reconstructWidth=0.0, reconstructHeight=0.0, reconstructStartName="",
+	floater=undefined, model=undefined, faces=undefined, bones=#(), debugShapes=#(), endpointSectionPlanes=#(), interventionPlanes=#(), previewControlIndices=#(), previewIntervention=false, previewSimpleIntervention=false, previewProfiles=#(), previewFractions=#(), previewProfileFractions=#(), previewStartRatio=0.1, previewEndRatio=0.9, ratioSyncing=false, previewMode=1, previewChainCount=8, previewSpreadAlongV=true, previewAxisLength=1.0, previewBoneSize=0.01, previewBoneName="Bone_", sectionDebugMaterial=undefined, updating=false, interventionPreviewDirty=false, modelPreviewActive=false, reconstructPreviewActive=false, reconstructSource=#(), reconstructMatrices=#(), reconstructLength=0.0, reconstructParent=undefined, reconstructWidth=0.0, reconstructHeight=0.0, reconstructStartName="", mergeSource=#(), mergePreviewBone=undefined, mergeParent=undefined, mergeEndTM=undefined, mergeUseFirst=false,
 	fn setSource sourceModel sourceFaces = 
 	(
 		this.model=sourceModel; this.faces=copy sourceFaces; 
@@ -1125,20 +1125,62 @@ struct ND_BoneChainController_v1 (
 		redrawViews()
 		true
 	),
-	fn mergeChain ui = (
-		local chain=selection as Array
+	fn previewMergeChain ui = (
+		local chain=if this.mergeSource.count>0 then this.mergeSource else (selection as Array)
 		if chain.count<=1 then (messageBox "请选择多根连续骨骼"; return false)
+		if isValidNode this.mergePreviewBone do delete this.mergePreviewBone
 		local start=chain[1]; local endBone=chain[chain.count]; local endTM=PreTranslate endBone.transform [endBone.length,0,0]
+		local merged=undefined
+		if ui.check_frist_bone.state then (merged=copy start; merged.length=distance start.pos endTM.pos)
+		else (
+			local made=this.createBoneform_tm #(start.transform,endTM) false start.width start.height ui.edit_name.text
+			if made.count==0 do return false
+			merged=made[1]
+		)
+		merged.name=uniquename ("Preview_MergeBone_"+start.name)
+		merged.parent=start.parent
+		this.mergeSource=for bone in chain collect bone
+		this.mergePreviewBone=merged
+		this.mergeParent=start.parent
+		this.mergeEndTM=endTM
+		this.mergeUseFirst=ui.check_frist_bone.state
+		select merged
+		redrawViews()
+		true
+	),
+	fn commitMergeChain ui = (
+		if this.mergeSource.count==0 or not isValidNode this.mergePreviewBone then (messageBox "请先预览合并骨骼。"; return false)
+		local chain=this.mergeSource
+		local merged=this.mergePreviewBone
+		local start=chain[1]
 		undo "ff_merger_bone" on (
-			local merged=undefined
-			if ui.check_frist_bone.state then (merged=copy start; merged.length=distance start.pos endTM.pos; merged.parent=start.parent; merged.name="MergeBone_"+start.name)
-			else (local made=this.createBoneform_tm #(start.transform,endTM) false start.width start.height ui.edit_name; merged=made[1]; this.change_name_merge #(merged); merged.name="MergeBone_"+(uniquename start.name))
-			merged.parent=start.parent
-			if ui.check_change_child.state and isValidNode merged do for bone in chain do for child in bone.children where (findItem chain child)==0 do child.parent=merged
+			if this.mergeUseFirst do merged.length=distance start.pos this.mergeEndTM.pos
+			if ui.check_change_child.state do for bone in chain do for child in bone.children where (findItem chain child)==0 do child.parent=merged
+			merged.parent=this.mergeParent
+			merged.name="MergeBone_"+(uniquename start.name)
 			this.change_name_remove chain
 			if ui.check_remoe_old_bone.state do delete chain
 		)
+		this.mergePreviewBone=undefined
+		this.mergeSource=#()
+		this.mergeParent=undefined
+		this.mergeEndTM=undefined
+		select merged
+		redrawViews()
+		true
 	),
+	fn cancelMergeChain ui = (
+		local source=this.mergeSource
+		if isValidNode this.mergePreviewBone do delete this.mergePreviewBone
+		this.mergePreviewBone=undefined
+		this.mergeSource=#()
+		this.mergeParent=undefined
+		this.mergeEndTM=undefined
+		if source.count>0 do select source
+		redrawViews()
+		true
+	),
+
 	fn updateInterventionRatios ui isStart value = (
 		if this.ratioSyncing do return false
 		this.ratioSyncing=true
@@ -1295,6 +1337,11 @@ struct ND_BoneChainController_v1 (
 	(
 		this.closeFloater(); 
 		this.clearPreview()
+		if isValidNode this.mergePreviewBone do delete this.mergePreviewBone
+		this.mergePreviewBone=undefined
+		this.mergeSource=#()
+		this.mergeParent=undefined
+		this.mergeEndTM=undefined
 		this.reconstructPreviewActive=false
 		this.reconstructSource=#()
 		this.reconstructMatrices=#()
@@ -1337,7 +1384,7 @@ rollout create_bone_chain_model "模型骨骼链" width:240 height:280
 	checkbox chk_section_debug "采样平面" checked:false tooltip:"显示截面采样平面（青色）" align:#right
 
 	checkbox chk_intervention "截面干预" checked:true across:2 tooltip:"调整首/中/尾三个截面" align:#left
-	checkbox chk_simple_intervention "简陋模式" checked:false enabled:false tooltip:"仅用首/中/尾干预截面生成平滑简模和骨骼" align:#right
+	checkbox chk_simple_intervention "简陋模式" checked:true enabled:false tooltip:"仅用首/中/尾干预截面生成平滑简模和骨骼" align:#right
 	
 	spinner spn_intervention_start "起点:" range:[1,99,5] type:#integer scale:1 fieldWidth:42 across:2 enabled:false align:#left tooltip:"	%比例"
 	spinner spn_intervention_end "终点:" range:[1,100,95] type:#integer scale:1 fieldWidth:42 Align:#right enabled:false align:#right tooltip:"	%比例"
@@ -1388,7 +1435,7 @@ rollout create_bone_chain_model "模型骨骼链" width:240 height:280
 	on btn_cancel pressed do ND_BoneChainController.cancel_createModelChain create_bone_chain_model
 )
 
-rollout create_bone_chain "骨骼链编辑" width:240 height:530
+rollout create_bone_chain "骨骼链编辑" width:240 height:555
 (
 	group "原骨骼链编辑" (label lab_02 "1. 先按骨骼顺序选中骨骼链" Align:#left; label lab_03 "2. 然后使用 分配、合并 功能" Align:#left)
 	edittext edit_name "Bone名前缀：" text:"Bone_" fieldWidth:85 height:20
@@ -1402,14 +1449,22 @@ rollout create_bone_chain "骨骼链编辑" width:240 height:530
 		button btn_reconstruct_done "确定" width:70 height:25
 		button btn_reconstruct_cancel "取消" width:70 height:25
 	)
-	group "骨骼融合" (checkbox check_frist_bone "以第一节为准"; button btn_merge_bone "合并骨骼" width:120 height:25 tooltip:"合并选择骨骼")
+	group "骨骼融合" (
+		checkbox check_frist_bone "以第一节为准";
+		button btn_merge_preview "预览" width:70 height:25 across:3
+		button btn_merge_done "确定" width:70 height:25
+		button btn_merge_cancel "取消" width:70 height:25
+	)
 	label lab_help "738746223@qq.com"
 	on spn2 changed value do if ND_BoneChainController.reconstructPreviewActive do ND_BoneChainController.updateReconstructPreview create_bone_chain
 	on spn_gradient changed value do if ND_BoneChainController.reconstructPreviewActive do ND_BoneChainController.updateReconstructPreview create_bone_chain
 	on bnt_reconstruct_chain pressed do ND_BoneChainController.reconstructChain create_bone_chain
 	on btn_reconstruct_done pressed do ND_BoneChainController.commitReconstructChain create_bone_chain
 	on btn_reconstruct_cancel pressed do ND_BoneChainController.cancelReconstructChain create_bone_chain
-	on btn_merge_bone pressed do ND_BoneChainController.mergeChain create_bone_chain
+	on check_frist_bone changed state do if ND_BoneChainController.mergeSource.count>0 do ND_BoneChainController.previewMergeChain create_bone_chain
+	on btn_merge_preview pressed do ND_BoneChainController.previewMergeChain create_bone_chain
+	on btn_merge_done pressed do ND_BoneChainController.commitMergeChain create_bone_chain
+	on btn_merge_cancel pressed do ND_BoneChainController.cancelMergeChain create_bone_chain
 )
 
 ND_BoneChainController.createFloater create_bone_chain create_bone_chain_info create_bone_chain_tools create_bone_chain_model
