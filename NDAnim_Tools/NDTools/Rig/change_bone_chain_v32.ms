@@ -1337,7 +1337,7 @@ rollout create_bone_chain_model "模型骨骼链" width:240 height:280
 	checkbox chk_section_debug "采样平面" checked:false tooltip:"显示截面采样平面（青色）" align:#right
 
 	checkbox chk_intervention "截面干预" checked:true across:2 tooltip:"调整首/中/尾三个截面" align:#left
-	checkbox chk_simple_intervention "简陋模式" checked:false enabled:false tooltip:"仅用首/中/尾干预截面生成平滑简模和骨骼" align:#right
+	checkbox chk_simple_intervention "简陋模式" checked:true enabled:false tooltip:"仅用首/中/尾干预截面生成平滑简模和骨骼" align:#right
 	
 	spinner spn_intervention_start "起点:" range:[1,99,5] type:#integer scale:1 fieldWidth:42 across:2 enabled:false align:#left tooltip:"	%比例"
 	spinner spn_intervention_end "终点:" range:[1,100,95] type:#integer scale:1 fieldWidth:42 Align:#right enabled:false align:#right tooltip:"	%比例"
