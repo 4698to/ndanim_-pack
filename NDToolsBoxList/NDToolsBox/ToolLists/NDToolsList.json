@@ -60,6 +60,20 @@
               "message": null,
               "hasHelp": false,
               "HelpUrl": null
+            },
+            {
+              "Name": "UV空间复制权重工具",
+              "StartupFolder": "scripts\\NDTools\\Rig\\SkinUVTransfer",
+              "ExtensionType": ".ms",
+              "SubPath": "DIYFaceSkinUVTransfer.ms",
+              "IsGrouping": false,
+              "Children": [],
+              "Path": null,
+              "RootType": "MaxRoot",
+              "ext": null,
+              "message": "uv 空间复制权重功能，把源模型已经修好的蒙皮权重，按 UV 空间复制到 UV 布局相同、但顶点数/点序/拓扑不同的目标模型上。\n典型场景：\n• 源模型精修过面部权重，目标模型是重新布线或不同 LOD 的成品。\n• 源模型不必留在目标场景里，可以先导出成文件，再在目标场景导入。",
+              "hasHelp": false,
+              "HelpUrl": null
             }
           ],
           "Path": null,
@@ -474,6 +488,20 @@
           "message": null,
           "hasHelp": false,
           "HelpUrl": null
+        },
+        {
+          "Name": "骨骼链编辑工具",
+          "StartupFolder": "scripts\\NDTools\\Rig",
+          "ExtensionType": ".ms",
+          "SubPath": "change_bone_chain_v32.ms",
+          "IsGrouping": false,
+          "Children": [],
+          "Path": null,
+          "RootType": "MaxRoot",
+          "ext": null,
+          "message": "骨骼链编辑工具,从模型创建骨骼链",
+          "hasHelp": true,
+          "HelpUrl": "https://sundaybox.cc/change_bone_chain"
         }
       ],
       "Path": null,
