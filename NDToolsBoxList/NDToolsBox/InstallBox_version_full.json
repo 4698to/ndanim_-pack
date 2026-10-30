@@ -12,11 +12,11 @@
   "item": [
     {
       "IsEnabled": true,
-      "LastPackTime": "/Date(1791976410641)/",
+      "LastPackTime": "/Date(1792045345790)/",
       "LastWriteTime": "/Date(1760439722342+0800)/",
       "SeriesMax": 2026,
       "SeriesMin": 2013,
-      "abouttext": "天晴工具组资源，蒙皮权重工具修复替换权重BUG,修复显示贴图按钮,",
+      "abouttext": "天晴工具组资源，蒙皮权重工具修复替换权重BUG,修复显示贴图按钮,新增骨骼链编辑工具",
       "dirpath": "scripts/NDTools",
       "helplink": "https://sundaybox.cc/pages/BipedLib/",
       "isParent": false,
@@ -24,10 +24,10 @@
       "quick": true,
       "savepath": "/www/wwwroot/default/ndbox/天晴动作组脚本工具v4.47For2015",
       "selected": true,
-      "sha": "u+at0jQjudGTykExzPdPxBcm08KrSb40xPT8W0YXct0=",
+      "sha": "Kc+nLy2xOgkQozDKW0uNr5WIOW8/VRJjoSFhRe4mbQk=",
       "targetpath": "/www/wwwroot/default/ndanim_-pack/NDAnim_Tools/NDTools",
       "type": 0,
-      "version": 6.51,
+      "version": 6.61,
       "zipname": "NDTools"
     },
     {
@@ -396,7 +396,7 @@
     },
     {
       "IsEnabled": true,
-      "LastPackTime": "/Date(1789059427981)/",
+      "LastPackTime": "/Date(1793329573413)/",
       "LastWriteTime": "/Date(1747914532407+0800)/",
       "SeriesMax": 2026,
       "SeriesMin": 2015,
@@ -408,10 +408,10 @@
       "quick": false,
       "savepath": null,
       "selected": true,
-      "sha": "GXjnR4viTzds+hHHfhF8KR0aOoPXriZkeVNTBWRPPik=",
+      "sha": "EL7rFDpH+QapIhcLtQXALbRYvMQctEQlR+QXt9vneKc=",
       "targetpath": "/www/wwwroot/default/ndanim_-pack/NDToolsBoxList",
       "type": 1,
-      "version": 1.4,
+      "version": 1.6,
       "zipname": "NDBoxList.zip"
     },
     {
