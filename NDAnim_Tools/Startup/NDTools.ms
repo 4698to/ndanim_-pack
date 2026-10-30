@@ -680,8 +680,12 @@ fn SRRemoveMenuItemsByTitle theMenu theTitle =
 	for i = theMenu.numItems() to 1 by -1 do
 	(
 		local theCurrItem = theMenu.getitem i
-		if theCurrItem != undefined and theCurrItem.gettitle() == theTitle then
+		format "%,%\n" i (theCurrItem.gettitle())
+		if theCurrItem != undefined and theCurrItem.gettitle() == theTitle then(
 			theMenu.removeItem theCurrItem
+		)else(
+
+		)
 	)
 )
 
@@ -724,6 +728,11 @@ fn SRRemoveNDBoxScriptMenuItems theMenu =
 	SRRemoveMenuItemsByTitle theMenu "Bip动画库"
 	SRRemoveMenuItemsByTitle theMenu "天晴动作工具栏设置"
 	SRRemoveMenuItemsByTitle theMenu "天晴动作工具栏"
+	SRRemoveMenuItemsByTitle theMenu "Bip???"
+	SRRemoveMenuItemsByTitle theMenu "?????????"
+	SRRemoveMenuItemsByTitle theMenu "?????"
+
+
 	SRCollapseMenuSeparators theMenu
 )
 
