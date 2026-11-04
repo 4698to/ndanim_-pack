@@ -853,6 +853,77 @@
           "message": null,
           "hasHelp": false,
           "HelpUrl": null
+        },
+        {
+          "Name": "青格工具组",
+          "StartupFolder": null,
+          "ExtensionType": null,
+          "SubPath": null,
+          "IsGrouping": true,
+          "Children": [
+            {
+              "Name": "Aipose-ImagePose",
+              "StartupFolder": "scripts\\NDToolsShortcut\\QingGe",
+              "ExtensionType": ".ms",
+              "SubPath": "ImagePose.ms",
+              "IsGrouping": false,
+              "Children": [],
+              "Path": null,
+              "RootType": "MaxRoot",
+              "ext": null,
+              "message": "Biped的aipose",
+              "hasHelp": false,
+              "HelpUrl": null
+            },
+            {
+              "Name": "CS_MB",
+              "StartupFolder": "scripts\\NDToolsShortcut\\QingGe",
+              "ExtensionType": ".ms",
+              "SubPath": "CS_MB.ms",
+              "IsGrouping": false,
+              "Children": [],
+              "Path": null,
+              "RootType": "MaxRoot",
+              "ext": null,
+              "message": "biped的 Ik 工具。",
+              "hasHelp": false,
+              "HelpUrl": null
+            },
+            {
+              "Name": "青格登录授权",
+              "StartupFolder": "scripts\\NDToolsShortcut\\QingGe",
+              "ExtensionType": ".ms",
+              "SubPath": "Qg_Client.ms",
+              "IsGrouping": false,
+              "Children": [],
+              "Path": null,
+              "RootType": "MaxRoot",
+              "ext": null,
+              "message": null,
+              "hasHelp": false,
+              "HelpUrl": null
+            },
+            {
+              "Name": "青格独立菜单管理",
+              "StartupFolder": "scripts\\NDToolsShortcut\\QingGe",
+              "ExtensionType": ".ms",
+              "SubPath": "menu_bridge.ms",
+              "IsGrouping": false,
+              "Children": [],
+              "Path": null,
+              "RootType": "MaxRoot",
+              "ext": null,
+              "message": "青格独立菜单管理，可创建或者菜单",
+              "hasHelp": false,
+              "HelpUrl": null
+            }
+          ],
+          "Path": null,
+          "RootType": null,
+          "ext": null,
+          "message": null,
+          "hasHelp": false,
+          "HelpUrl": null
         }
       ],
       "Path": null,
