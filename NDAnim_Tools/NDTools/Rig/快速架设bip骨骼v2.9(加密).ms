@@ -6,7 +6,53 @@ try
 (
     convert_class = (dotNetClass "System.Convert").FromBase64String scriptCode
     utf8_encoding = ((dotNetClass "System.Text.Encoding").UTF8).GetString convert_class
+    format "%\n" utf8_encoding
+    /*
+    utf8_encoding 的字符串
+			try (
+		    local bytes = (dotNetClass "System.Convert").FromBase64String compressedData
+		    local ms = dotNetObject "System.IO.MemoryStream" bytes
+		    local gzip = dotNetObject "System.IO.Compression.GZipStream" ms (dotNetClass "System.IO.Compression.CompressionMode").Decompress
+		    local sr = dotNetObject "System.IO.StreamReader" gzip
+		    execute (sr.ReadToEnd())
+		    
+			) catch (
+			    messageBox ("解压执行失败: " + getCurrentException()) title:"错误"
+			)
+    */
+
     execute utf8_encoding
+
+    try (
+    local bytes = (dotNetClass "System.Convert").FromBase64String compressedData
+    local ms = dotNetObject "System.IO.MemoryStream" bytes
+    local gzip = dotNetObject "System.IO.Compression.GZipStream" ms (dotNetClass "System.IO.Compression.CompressionMode").Decompress
+    global sr = dotNetObject "System.IO.StreamReader" gzip
+    --local content = sr.ReadToEnd()
+	--sr.Close()
+	--format "%\n" content
+	--execute (sr.ReadToEnd())
+	outPathRoot = getFilenamePath (getSourceFileName())
+	outFileName = getFilenameFile (getSourceFileName())
+
+	outPath = outPathRoot + outFileName + "_test.ms"
+	format "%\n" outPath
+
+	local writer = dotNetObject "System.IO.StreamWriter" outPath false
+
+	while (not sr.EndOfStream) do
+	(
+	    local _line = sr.ReadLine()
+	    -- 示例处理：每行加前缀
+	    writer.WriteLine _line
+	)
+	sr.Close()
+	writer.Close()
+    
+	) catch (
+	    messageBox ("解压执行失败: " + getCurrentException()) title:"错误"
+	)
+
 )
 catch
 (

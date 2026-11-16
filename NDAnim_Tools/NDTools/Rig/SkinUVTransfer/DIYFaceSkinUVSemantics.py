@@ -243,6 +243,99 @@ def map_bones(source_names, target_names, explicit=None, source_rules=None, targ
     return mapping, issues
 
 
+def _plain_key(item):
+    key = re.sub(r'[^a-z0-9]+', '', item['base'].replace('{side}', ''))
+    return key or None
+
+
+def _side_less_key(name, rules=None):
+    """返回去掉左右标记和分隔符后的名称键；侧别冲突时返回 None。"""
+    item = parse_name(name, rules)
+    if item['side'] == 'Conflict':
+        return None
+    return _plain_key(item)
+
+
+def map_bones_plain(source_names, target_names, explicit=None, source_rules=None, target_rules=None):
+    """只按名称映射骨骼，不使用左右语义和骨骼位置。
+
+    依次尝试原名、清理名、去左右标记后的名称，自动匹配要求源和目标均唯一。
+    显式原名映射仍按原名精确匹配。
+    """
+    explicit = {} if explicit is None else explicit
+    if not isinstance(explicit, dict) or any(not isinstance(k, _STRINGS)
+                                            or not isinstance(v, _STRINGS)
+                                            for k, v in explicit.items()):
+        raise ValueError('Explicit mappings must map original names to original names')
+    sr, tr = _groups(source_names), _groups(target_names)
+    sc = _groups([clean_name(n) for n in source_names])
+    tc = _groups([clean_name(n) for n in target_names])
+    sl, tl, sls, tls = {}, {}, {}, {}
+    for index, name in enumerate(source_names):
+        item = parse_name(name, source_rules)
+        key = _plain_key(item) if item['side'] != 'Conflict' else None
+        if key is None:
+            continue
+        sl.setdefault(key, []).append(index)
+        if item['side'] in ('Left', 'Right'):
+            sls.setdefault((key, item['side']), []).append(index)
+    for index, name in enumerate(target_names):
+        item = parse_name(name, target_rules)
+        key = _plain_key(item) if item['side'] != 'Conflict' else None
+        if key is None:
+            continue
+        tl.setdefault(key, []).append(index)
+        if item['side'] in ('Left', 'Right'):
+            tls.setdefault((key, item['side']), []).append(index)
+    mapping, issues = {}, []
+    for name in sorted(explicit):
+        if name not in sr:
+            issues.append('Missing explicit source: {}'.format(name))
+    for index, name in enumerate(source_names):
+        if len(sr[name]) != 1:
+            issues.append('Duplicate original source: {}'.format(name))
+            continue
+        if name in explicit:
+            choices = tr.get(explicit[name], [])
+            if len(choices) == 1:
+                mapping[index] = choices[0] + 1
+            else:
+                issues.append('Missing or duplicate explicit target: {}'.format(explicit[name]))
+            continue
+        choices = tr.get(name, [])
+        if len(choices) > 1:
+            issues.append('Duplicate original target: {}'.format(name))
+            continue
+        if not choices:
+            key = clean_name(name)
+            candidates = tc.get(key, [])
+            if candidates:
+                if len(sc[key]) != 1 or len(candidates) > 1:
+                    issues.append('Normalized name collision: {}'.format(name))
+                    continue
+                choices = candidates
+        if not choices:
+            key = _side_less_key(name, source_rules)
+            if key is not None:
+                candidates = tl.get(key, [])
+                if len(sl.get(key, [])) == 1 and len(candidates) == 1:
+                    choices = candidates
+                elif candidates or len(sl.get(key, [])) > 1:
+                    side = parse_name(name, source_rules)['side']
+                    same_source = sls.get((key, side), []) if side in ('Left', 'Right') else []
+                    same_target = tls.get((key, side), []) if side in ('Left', 'Right') else []
+                    if len(same_source) == 1 and len(same_target) == 1:
+                        choices = same_target
+                    else:
+                        issues.append('Side-agnostic name collision: {}'.format(name))
+                        continue
+        if not choices:
+            issues.append('Missing target bone: {}'.format(name))
+        else:
+            mapping[index] = choices[0] + 1
+    return mapping, issues
+
+
 def make_reference(left_index, right_index, left_position, right_position, epsilon=0.001, pose=''):
     """用从零开始的骨骼索引和无量纲容差构建参考。"""
     if not _index(left_index) or not _index(right_index) or left_index == right_index:

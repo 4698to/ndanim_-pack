@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPackage SchemaVersion="1.0"
+    ProductType="Application"
+    AutodeskProduct="3ds Max"
+
+    Name="3ds Max SunDayBox Tools"
+    Description="3ds Max SunDayBox Tools"
+    AppVersion="0.1"
+    FriendlyVersion="0.1"
+    HelpFile="./Contents/index.htm"
+    SupportedLocales="Enu"
+    AppNameSpace=""
+    Author="Fujian TQ Digital, Inc."
+    ProductCode="*"
+    UpgradeCode="{901360F2-512A-49D6-84A8-A31B8223F60C}">
+
+    <RuntimeRequirements OS="Win64" Platform="3ds Max" SeriesMin="2015" SeriesMax="2027" />
+
+    <CompanyDetails Name="Fujian TQ Digital, Inc." Url="www.sundaybox.cc" Email="738746223@qq.com" />
+
+    <NDTOOLS>
+    </NDTOOLS>
+
+</ApplicationPackage>
+

@@ -8,42 +8,48 @@ import os
 import time
 import sys
 
-def _reload_cached_semantics():
-    cached = sys.modules.get('DIYFaceSkinUVSemantics')
-    if cached is None:
-        return None
-    try:
-        from importlib import reload
-    except ImportError:
-        from imp import reload
-    try:
-        return reload(cached)
-    except Exception:
-        return cached
-
-
+_SEMANTICS_NAME = 'DIYFaceSkinUVSemantics'
 _SEMANTICS_REQUIRED = ('build_marker_rules', 'pair_bones', 'parse_name', 'make_reference',
-                       'map_bones', 'resolve_candidates', 'validate_v3')
+                       'map_bones', 'map_bones_plain', 'resolve_candidates', 'validate_v3')
 
-sem = _reload_cached_semantics()
-if sem is None:
-    try:
-        import DIYFaceSkinUVSemantics as sem
-    except ImportError:
-        _script_file = globals().get('__file__')
-        if not _script_file:
-            raise ImportError(u"必须携带 DIYFaceSkinUVSemantics.py；exec 运行时请设置主脚本 __file__ 或将脚本目录加入 sys.path。")
-        _script_dir = os.path.dirname(os.path.abspath(_script_file))
-        if _script_dir not in sys.path:
-            sys.path.insert(0, _script_dir)
+
+def _load_semantics():
+    """始终从主脚本同目录按路径加载，避免命中 sys.path 或缓存里的旧副本。"""
+    module_path = None
+    script_file = globals().get('__file__')
+    if script_file:
+        module_path = os.path.join(os.path.dirname(os.path.abspath(script_file)),
+                                   _SEMANTICS_NAME + '.py')
+    if module_path and os.path.isfile(module_path):
+        sys.modules.pop(_SEMANTICS_NAME, None)
         try:
-            import DIYFaceSkinUVSemantics as sem
+            from importlib.util import module_from_spec, spec_from_file_location
         except ImportError:
-            raise ImportError(u"主脚本目录中缺少必需模块 DIYFaceSkinUVSemantics.py：{}".format(_script_dir))
+            from imp import load_source
+            return load_source(_SEMANTICS_NAME, module_path)
+        spec = spec_from_file_location(_SEMANTICS_NAME, module_path)
+        module = module_from_spec(spec)
+        sys.modules[_SEMANTICS_NAME] = module
+        try:
+            spec.loader.exec_module(module)
+        except Exception:
+            sys.modules.pop(_SEMANTICS_NAME, None)
+            raise
+        return module
+    cached = sys.modules.get(_SEMANTICS_NAME)
+    if cached is not None:
+        return cached
+    if script_file:
+        raise ImportError(u"主脚本目录中缺少必需模块 DIYFaceSkinUVSemantics.py：{}".format(
+            os.path.dirname(os.path.abspath(script_file))))
+    raise ImportError(u"必须携带 DIYFaceSkinUVSemantics.py；exec 运行时请设置主脚本 __file__ 或将脚本目录加入 sys.path。")
+
+
+sem = _load_semantics()
 _missing = [name for name in _SEMANTICS_REQUIRED if not hasattr(sem, name)]
 if _missing:
-    raise ImportError(u"DIYFaceSkinUVSemantics.py 版本与主脚本不匹配，缺少：{}。请确认两者在同一目录且为最新版本后重新打开工具。".format(
-        u"、".join(_missing)))
+    raise ImportError(u"DIYFaceSkinUVSemantics.py 版本与主脚本不匹配，缺少：{}。已加载：{}。请确认两者在同一目录且为最新版本后重新打开工具。".format(
+        u"、".join(_missing), getattr(sem, '__file__', u'未知')))
 
 try:
     from PySide6 import QtCore, QtWidgets
@@ -597,12 +603,14 @@ def _target_bone_lookup(skin):
     return {key: ids[0] for key, ids in groups.items() if len(ids) == 1}
 
 
-def _virtual_bones(skin, source_names, groups, explicit, source_rules, target_rules):
+def _virtual_bones(skin, source_names, groups, explicit, source_rules, target_rules,
+                   plain=False):
+    matcher = sem.map_bones_plain if plain else sem.map_bones
     names = _skin_bones(skin) if skin is not None else []
     scene_names = [name for name in sorted(groups) for unused in groups[name]]
-    scene_mapping, issues = sem.map_bones(
+    scene_mapping, issues = matcher(
         source_names, scene_names, explicit, source_rules, target_rules)
-    mapping, unused_issues = sem.map_bones(
+    mapping, unused_issues = matcher(
         source_names, names, explicit, source_rules, target_rules)
     duplicate_issues = []
     # 优先保留 Skin 匹配，仅未匹配的源骨骼使用场景候选。
@@ -621,7 +629,7 @@ def _virtual_bones(skin, source_names, groups, explicit, source_rules, target_ru
     for source_id, target_id in mapping.items():
         resolved_explicit[source_names[source_id]] = names[target_id - 1]
     if resolved_explicit != explicit:
-        unused_mapping, issues = sem.map_bones(
+        unused_mapping, issues = matcher(
             source_names, scene_names, resolved_explicit, source_rules, target_rules)
     issues.extend(duplicate_issues)
     for source_id, target_id in list(mapping.items()):
@@ -830,10 +838,12 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
         raise ValueError(u"写入模式或复制方式无效。")
     if not _valid_index(uv_channel) or uv_channel < 1:
         raise ValueError(u"UV 通道必须是正整数。")
-    if (disambiguation not in ('side', 'consistency') or not _valid_number(epsilon_side)
+    if (disambiguation not in ('side', 'consistency', 'plain') or not _valid_number(epsilon_side)
             or epsilon_side < 0 or not _valid_number(tolerance) or tolerance < 0
             or not isinstance(pose, _STRING_TYPES)):
         raise ValueError(u"消歧方式、带宽、容差或姿态说明无效。")
+    if disambiguation == 'plain' and method != 'uv':
+        raise ValueError(u"纯 UV 采样模式只按 UV 取源面，不比较三维距离；请把复制方式改为“UV 空间”。")
     explicit = {} if bone_mapping is None else bone_mapping
     sem.parse_name('Head', naming_rules)
     sem.map_bones([], [], explicit=explicit, target_rules=naming_rules)
@@ -865,7 +875,8 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
         raise ValueError(u"目标模型没有 UV 通道 {}。".format(uv_channel))
     skin = _skin_modifier(node, activate=False)
     groups = _scene_name_groups()
-    names, mapping, issues = _virtual_bones(skin, source_names, groups, explicit, source_rules, naming_rules)
+    names, mapping, issues = _virtual_bones(skin, source_names, groups, explicit, source_rules,
+                                            naming_rules, plain=(disambiguation == 'plain'))
     reference_names = list(names)
     if side_pair is not None:
         if (not isinstance(side_pair, (list, tuple)) or len(side_pair) != 2
@@ -1179,6 +1190,7 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
         self.disambiguation = QtWidgets.QComboBox(self)
         self.disambiguation.addItem(u"骨骼左右 + 候选一致性", 'side')
         self.disambiguation.addItem(u"仅候选一致性", 'consistency')
+        self.disambiguation.addItem(u"纯 UV 采样 + 骨骼名（忽略左右/位置）", 'plain')
         uv_row = QtWidgets.QHBoxLayout()
         uv_row.addWidget(self.flip_u)
         uv_row.addWidget(QtWidgets.QLabel(u"消歧", self))
@@ -1309,7 +1321,11 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
         if self.node is None:
             self.pair_label.setText(u"参考对：未选择模型")
             return
-        if _combo_data(self.disambiguation) != 'side':
+        mode = _combo_data(self.disambiguation)
+        if mode == 'plain':
+            self.pair_label.setText(u"参考对：未启用（忽略左右与位置，仅按 UV + 骨骼名）")
+            return
+        if mode != 'side':
             self.pair_label.setText(u"参考对：未启用（仅候选一致性）")
             return
         try:
