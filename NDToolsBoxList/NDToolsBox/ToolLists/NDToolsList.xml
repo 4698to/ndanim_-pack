@@ -612,6 +612,56 @@
           <RootType>MaxRoot</RootType>
           <hasHelp>false</hasHelp>
         </Person>
+        <Person>
+          <Name>青格工具组</Name>
+          <IsGrouping>true</IsGrouping>
+          <Children>
+            <Person>
+              <Name>Aipose-ImagePose</Name>
+              <StartupFolder>scripts\NDToolsShortcut\QingGe</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>ImagePose.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <message>Biped的aipose</message>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>CS_MB</Name>
+              <StartupFolder>scripts\NDToolsShortcut\QingGe</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>CS_MB.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <message>biped的 Ik 工具。</message>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>青格登录授权</Name>
+              <StartupFolder>scripts\NDToolsShortcut\QingGe</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>Qg_Client.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <hasHelp>false</hasHelp>
+            </Person>
+            <Person>
+              <Name>青格独立菜单管理</Name>
+              <StartupFolder>scripts\NDToolsShortcut\QingGe</StartupFolder>
+              <ExtensionType>.ms</ExtensionType>
+              <SubPath>menu_bridge.ms</SubPath>
+              <IsGrouping>false</IsGrouping>
+              <Children />
+              <RootType>MaxRoot</RootType>
+              <message>青格独立菜单管理，可创建或者菜单</message>
+              <hasHelp>false</hasHelp>
+            </Person>
+          </Children>
+          <hasHelp>false</hasHelp>
+        </Person>
       </Children>
       <hasHelp>false</hasHelp>
     </Person>
