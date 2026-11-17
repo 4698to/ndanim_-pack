@@ -605,13 +605,16 @@ def _target_bone_lookup(skin):
 
 def _virtual_bones(skin, source_names, groups, explicit, source_rules, target_rules,
                    plain=False):
-    matcher = sem.map_bones_plain if plain else sem.map_bones
+    def match(target_names, overrides=None):
+        use = explicit if overrides is None else overrides
+        if plain:
+            return sem.map_bones_plain(source_names, target_names, use)
+        return sem.map_bones(source_names, target_names, use, source_rules, target_rules)
+
     names = _skin_bones(skin) if skin is not None else []
     scene_names = [name for name in sorted(groups) for unused in groups[name]]
-    scene_mapping, issues = matcher(
-        source_names, scene_names, explicit, source_rules, target_rules)
-    mapping, unused_issues = matcher(
-        source_names, names, explicit, source_rules, target_rules)
+    scene_mapping, issues = match(scene_names)
+    mapping, unused_issues = match(names)
     duplicate_issues = []
     # 优先保留 Skin 匹配，仅未匹配的源骨骼使用场景候选。
     for source_id, scene_id in sorted(scene_mapping.items()):
@@ -629,8 +632,7 @@ def _virtual_bones(skin, source_names, groups, explicit, source_rules, target_ru
     for source_id, target_id in mapping.items():
         resolved_explicit[source_names[source_id]] = names[target_id - 1]
     if resolved_explicit != explicit:
-        unused_mapping, issues = matcher(
-            source_names, scene_names, resolved_explicit, source_rules, target_rules)
+        unused_mapping, issues = match(scene_names, resolved_explicit)
     issues.extend(duplicate_issues)
     for source_id, target_id in list(mapping.items()):
         name = names[target_id - 1]
@@ -928,7 +930,8 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
             for uv, side, material in sorted(vertex_samples):
                 weights, reason, omitted, loss = sem.resolve_candidates(
                     data, _query_uv(uv, index), side, mapping, epsilon=epsilon_side,
-                    tolerance=tolerance, material_id=material, use_side=use_side)
+                    tolerance=tolerance, material_id=material, use_side=use_side,
+                    resolve_conflicts=(disambiguation == 'plain'))
                 missing.update(omitted)
                 lost += loss
                 if reason != 'ok':
@@ -1190,7 +1193,7 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
         self.disambiguation = QtWidgets.QComboBox(self)
         self.disambiguation.addItem(u"骨骼左右 + 候选一致性", 'side')
         self.disambiguation.addItem(u"仅候选一致性", 'consistency')
-        self.disambiguation.addItem(u"纯 UV 采样 + 骨骼名（忽略左右/位置）", 'plain')
+        self.disambiguation.addItem(u"纯 UV 采样 + 骨骼名（逐字优先）", 'plain')
         uv_row = QtWidgets.QHBoxLayout()
         uv_row.addWidget(self.flip_u)
         uv_row.addWidget(QtWidgets.QLabel(u"消歧", self))
@@ -1305,6 +1308,8 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
         for name in (_skin_bones(skin) if skin is not None else []) + sorted(groups):
             if name not in names:
                 names.append(name)
+        if _combo_data(self.disambiguation) == 'plain':
+            return names, {}, groups
         rules = sem.build_marker_rules(names, _text(self.left_marker.text()),
                                        _text(self.right_marker.text()))
         return names, rules, groups
@@ -1323,7 +1328,7 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
             return
         mode = _combo_data(self.disambiguation)
         if mode == 'plain':
-            self.pair_label.setText(u"参考对：未启用（忽略左右与位置，仅按 UV + 骨骼名）")
+            self.pair_label.setText(u"参考对：未启用（骨骼名逐字优先，基名唯一时补全左右标记）")
             return
         if mode != 'side':
             self.pair_label.setText(u"参考对：未启用（仅候选一致性）")
@@ -1365,9 +1370,28 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
             if self.node is None:
                 raise ValueError(u"请先选择处理模型。")
             names, rules, unused_groups = self._current_names_rules()
+            source_names, source_rules = self._source_rules()
+            if _combo_data(self.disambiguation) == 'plain':
+                mapping, issues = sem.map_bones_plain(source_names, names)
+                lines = [u"当前模型 {}".format(n) for n in names]
+                lines += [u"文件源 {}".format(n) for n in source_names]
+                loose = 0
+                for key, value in sorted(mapping.items()):
+                    source_name, target_name = source_names[key], names[value - 1]
+                    flag = u""
+                    if sem.clean_name(source_name) != sem.clean_name(target_name):
+                        flag = u"（补全左右标记）"
+                        loose += 1
+                    lines.append(u"匹配 {}{} -> {}".format(source_name, flag, target_name))
+                lines += issues
+                self._details(u"骨骼解析",
+                              u"纯 UV 采样：按骨骼名匹配 {} 个名称，不解析左右语义；精确 {} 个，补全左右 {} 个，缺失 {} 个。".format(
+                                  len(names), len(mapping) - loose, loose,
+                                  len([i for i in issues if i.startswith('Missing target bone')])),
+                              u'\n'.join(lines))
+                return
             pairs, issues = sem.pair_bones(names, rules)
             lines = [u"当前模型 {}: {}".format(n, sem.parse_name(n, rules)) for n in names]
-            source_names, source_rules = self._source_rules()
             lines += [u"文件源 {}: {}".format(n, sem.parse_name(n, source_rules)) for n in source_names]
             lines += [u"参考对候选（仅供诊断）：{} / {}".format(names[l], names[r]) for l, r, unused in pairs]
             lines += issues

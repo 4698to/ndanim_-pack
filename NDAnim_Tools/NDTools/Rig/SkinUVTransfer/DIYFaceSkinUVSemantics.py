@@ -243,24 +243,20 @@ def map_bones(source_names, target_names, explicit=None, source_rules=None, targ
     return mapping, issues
 
 
-def _plain_key(item):
-    key = re.sub(r'[^a-z0-9]+', '', item['base'].replace('{side}', ''))
-    return key or None
-
-
-def _side_less_key(name, rules=None):
-    """返回去掉左右标记和分隔符后的名称键；侧别冲突时返回 None。"""
-    item = parse_name(name, rules)
+def _loose_key(name):
+    """去掉左右标记与分隔符后的名称键；侧别冲突时返回 None。"""
+    item = parse_name(name)
     if item['side'] == 'Conflict':
         return None
-    return _plain_key(item)
+    return re.sub(r'[^a-z0-9]+', '', item['base'].replace('{side}', '')) or None
 
 
-def map_bones_plain(source_names, target_names, explicit=None, source_rules=None, target_rules=None):
-    """只按名称映射骨骼，不使用左右语义和骨骼位置。
+def map_bones_plain(source_names, target_names, explicit=None):
+    """只按骨骼名映射，不解析左右镜像语义，也不使用骨骼位置。
 
-    依次尝试原名、清理名、去左右标记后的名称，自动匹配要求源和目标均唯一。
-    显式原名映射仍按原名精确匹配。
+    依次尝试：原名精确 → 清理层级/命名空间 → 去掉左右标记后基名唯一。
+    最后一级仅在源与目标两侧都唯一时生效，用于对齐“一边带 _l/_r、一边不带”的命名差异；
+    基名在目标侧有左右两根时不做猜测，记为缺失。
     """
     explicit = {} if explicit is None else explicit
     if not isinstance(explicit, dict) or any(not isinstance(k, _STRINGS)
@@ -270,23 +266,15 @@ def map_bones_plain(source_names, target_names, explicit=None, source_rules=None
     sr, tr = _groups(source_names), _groups(target_names)
     sc = _groups([clean_name(n) for n in source_names])
     tc = _groups([clean_name(n) for n in target_names])
-    sl, tl, sls, tls = {}, {}, {}, {}
+    sl, tl = {}, {}
     for index, name in enumerate(source_names):
-        item = parse_name(name, source_rules)
-        key = _plain_key(item) if item['side'] != 'Conflict' else None
-        if key is None:
-            continue
-        sl.setdefault(key, []).append(index)
-        if item['side'] in ('Left', 'Right'):
-            sls.setdefault((key, item['side']), []).append(index)
+        key = _loose_key(name)
+        if key:
+            sl.setdefault(key, []).append(index)
     for index, name in enumerate(target_names):
-        item = parse_name(name, target_rules)
-        key = _plain_key(item) if item['side'] != 'Conflict' else None
-        if key is None:
-            continue
-        tl.setdefault(key, []).append(index)
-        if item['side'] in ('Left', 'Right'):
-            tls.setdefault((key, item['side']), []).append(index)
+        key = _loose_key(name)
+        if key:
+            tl.setdefault(key, []).append(index)
     mapping, issues = {}, []
     for name in sorted(explicit):
         if name not in sr:
@@ -315,20 +303,13 @@ def map_bones_plain(source_names, target_names, explicit=None, source_rules=None
                     continue
                 choices = candidates
         if not choices:
-            key = _side_less_key(name, source_rules)
-            if key is not None:
-                candidates = tl.get(key, [])
-                if len(sl.get(key, [])) == 1 and len(candidates) == 1:
-                    choices = candidates
-                elif candidates or len(sl.get(key, [])) > 1:
-                    side = parse_name(name, source_rules)['side']
-                    same_source = sls.get((key, side), []) if side in ('Left', 'Right') else []
-                    same_target = tls.get((key, side), []) if side in ('Left', 'Right') else []
-                    if len(same_source) == 1 and len(same_target) == 1:
-                        choices = same_target
-                    else:
-                        issues.append('Side-agnostic name collision: {}'.format(name))
-                        continue
+            key = _loose_key(name)
+            candidates = tl.get(key, []) if key else []
+            if candidates:
+                if len(sl[key]) != 1 or len(candidates) > 1:
+                    issues.append('Side-agnostic name collision: {}'.format(name))
+                    continue
+                choices = candidates
         if not choices:
             issues.append('Missing target bone: {}'.format(name))
         else:
@@ -488,11 +469,14 @@ def validate_v3(data):
 
 
 def resolve_candidates(data, candidates, target_side, mapping, epsilon=0.001,
-                       tolerance=1e-5, material_id=None, use_side=True):
+                       tolerance=1e-5, material_id=None, use_side=True,
+                       resolve_conflicts=False):
     """返回目标权重字典（索引从一开始）或空值、原因、缺失名称及丢失比例。
 
     候选沿用主脚本的三角形与重心坐标格式，可通过材质或面索引读取材质 ID。
     源侧别使用源参考容差，而非目标容差；比较时保留缺失骨骼的源索引标识。
+    resolve_conflicts 为真时，候选权重不一致不再判为歧义，改取出现次数最多的一组，
+    票数相同取最先出现的候选，直接沿用该候选的原始权重。
     """
     if not _number(tolerance) or tolerance < 0 or not _number(epsilon) or epsilon < 0:
         raise ValueError('Invalid candidate tolerance or epsilon')
@@ -562,7 +546,18 @@ def resolve_candidates(data, candidates, target_side, mapping, epsilon=0.001,
                   for side, vector, total in retained]
     keys = set(key for vector in normalized for key in vector)
     # 用各分量极差比较所有候选对，而非只与首个候选比较。
-    if any(max(v.get(key, 0.0) for v in normalized) - min(v.get(key, 0.0) for v in normalized) > tolerance for key in keys):
+    conflict = any(max(v.get(key, 0.0) for v in normalized)
+                   - min(v.get(key, 0.0) for v in normalized) > tolerance for key in keys)
+    if conflict and resolve_conflicts:
+        # 纯 UV 采样：候选不一致也照抄，取出现次数最多的一组，票数相同取最先出现的候选。
+        groups = {}
+        for vector in normalized:
+            signature = tuple(sorted((key, round(value, 9)) for key, value in vector.items()))
+            groups.setdefault(signature, []).append(vector)
+        normalized = max(groups.values(), key=len)[:1]
+        keys = set(key for vector in normalized for key in vector)
+        conflict = False
+    if conflict:
         reason = 'ambiguous'
         if use_side and target_side == 'CenterBand':
             reason = 'center_ambiguous'
