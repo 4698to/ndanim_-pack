@@ -680,8 +680,12 @@ fn SRRemoveMenuItemsByTitle theMenu theTitle =
 	for i = theMenu.numItems() to 1 by -1 do
 	(
 		local theCurrItem = theMenu.getitem i
-		if theCurrItem != undefined and theCurrItem.gettitle() == theTitle then
+		format "%,%\n" i (theCurrItem.gettitle())
+		if theCurrItem != undefined and theCurrItem.gettitle() == theTitle then(
 			theMenu.removeItem theCurrItem
+		)else(
+
+		)
 	)
 )
 
@@ -724,6 +728,13 @@ fn SRRemoveNDBoxScriptMenuItems theMenu =
 	SRRemoveMenuItemsByTitle theMenu "Bip动画库"
 	SRRemoveMenuItemsByTitle theMenu "天晴动作工具栏设置"
 	SRRemoveMenuItemsByTitle theMenu "天晴动作工具栏"
+	SRRemoveMenuItemsByTitle theMenu "Bip???"
+	SRRemoveMenuItemsByTitle theMenu "?????????"
+	SRRemoveMenuItemsByTitle theMenu "?????"
+	-- AI 二级菜单（整棵子菜单一起移除）
+	SRRemoveMenuItemsByTitle theMenu "AI"
+
+
 	SRCollapseMenuSeparators theMenu
 )
 
@@ -733,11 +744,15 @@ global NDBox_CuiSepBipGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E801"
 global NDBox_CuiBipLibGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E802"
 global NDBox_CuiSepToolbarGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E803"
 global NDBox_CuiToolbarGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E804"
+global NDBox_CuiAiSubMenuGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E805"
+global NDBox_CuiAiHubSettingsGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E806"
 global NDBox_CuiMenusLoaded -- 仅声明，避免 filein 时重置导致反复 LoadConfiguration
 
 -- 创建菜单项（参考 BsKeyTools：高低版本分流，避免 UI 重载期间崩溃）
 fn fnAddNDBoxMenuItems =
 (
+	format "NDTools: 创建 NDBox 菜单...\n"
+		
 	local curMaxVersion = ((maxVersion())[1] / 1000)
 	if curMaxVersion < 27 then
 	(
@@ -757,6 +772,23 @@ fn fnAddNDBoxMenuItems =
 			theFileMenu.addItem SeparatorItem (theFileMenu.numItems() + 1)
 			Action = menuMan.createActionItem "NDBoxTool_01" "NDBoxTool_01"
 			theFileMenu.addItem Action (theFileMenu.numItems() + 1)
+
+			-- “AI”二级菜单：第一项为 AIHUB 设置
+			try
+			(
+				format "NDTools: 创建 AI 菜单...\n"
+				SeparatorItem = menuMan.createSeparatorItem()
+				theFileMenu.addItem SeparatorItem (theFileMenu.numItems() + 1)
+				local aiMenu = menuMan.createMenu "AI"
+				local aiAction = menuMan.createActionItem "AIHubSettings" "NDTools"
+				aiMenu.addItem aiAction 1
+				local aiSubMenuItem = menuMan.createSubMenuItem "AI" aiMenu
+				theFileMenu.addItem aiSubMenuItem (theFileMenu.numItems() + 1)
+			)
+			catch
+			(
+				format "NDTools: 创建 AI 菜单失败: %\n" (getCurrentException())
+			)
 
 			menuMan.updateMenuBar()
 
@@ -785,6 +817,9 @@ fn fnAddNDBoxMenuItems =
 			ndMenu.CreateAction NDBox_CuiBipLibGuid macroScriptActionTableID "NDBoxTool_03`NDBoxTool_03" title:"Bip动画库"
 			ndMenu.CreateSeparator NDBox_CuiSepToolbarGuid
 			ndMenu.CreateAction NDBox_CuiToolbarGuid macroScriptActionTableID "NDBoxTool_01`NDBoxTool_01" title:"天晴动作工具栏设置"
+			-- “AI”二级菜单：第一项为 AIHUB 设置
+			local aiMenu = ndMenu.CreateSubMenu NDBox_CuiAiSubMenuGuid "AI"
+			aiMenu.CreateAction NDBox_CuiAiHubSettingsGuid macroScriptActionTableID "AIHubSettings`NDTools" title:"AIHUB 设置"
 		)
 		callbacks.removeScripts id:#NDBoxMenuItems
 		callbacks.addScript #cuiRegisterMenus callbackNDBoxExtraMenu id:#NDBoxMenuItems
@@ -838,6 +873,19 @@ fn fnRemoveNDBoxMenuItems =
 		catch
 			false
 	)
+)
+
+--------------------AI 服务器地址设置
+-- 必须先于 fnAddNDBoxMenuItems 注册，否则 NDBox 菜单无法创建对应 Action
+macroScript AIHubSettings
+category:"NDTools"
+internalcategory:"NDTools"
+tooltip:"AI 服务器地址设置"
+buttonText:"AI服务器设置"
+(
+	-- 固定路径：NDBox 插件目录
+	local f = "C:\\ProgramData\\Autodesk\\ApplicationPlugins\\NDToolsBox\\maxTools\\AIhub\\AIHub.ms"
+	if doesFileExist f then fileIn f else messageBox ("缺少文件: " + f) title:"NDTools"
 )
 
 -- Max >= 27: cuiRegisterMenus（在 fnAddNDBoxMenuItems 内处理）
