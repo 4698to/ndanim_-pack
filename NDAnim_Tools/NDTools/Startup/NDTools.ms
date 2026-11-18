@@ -746,6 +746,8 @@ global NDBox_CuiSepToolbarGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E803"
 global NDBox_CuiToolbarGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E804"
 global NDBox_CuiAiSubMenuGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E805"
 global NDBox_CuiAiHubSettingsGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E806"
+global NDBox_CuiMultiViewGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E807"
+global NDBox_CuiSkinTokensGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E808"
 global NDBox_CuiMenusLoaded -- 仅声明，避免 filein 时重置导致反复 LoadConfiguration
 
 -- 创建菜单项（参考 BsKeyTools：高低版本分流，避免 UI 重载期间崩溃）
@@ -782,6 +784,10 @@ fn fnAddNDBoxMenuItems =
 				local aiMenu = menuMan.createMenu "AI"
 				local aiAction = menuMan.createActionItem "AIHubSettings" "NDTools"
 				aiMenu.addItem aiAction 1
+				aiAction = menuMan.createActionItem "MultiViewSkeletonInference" "NDTools"
+				aiMenu.addItem aiAction (aiMenu.numItems() + 1)
+				aiAction = menuMan.createActionItem "SkinTokensWeight" "NDTools"
+				aiMenu.addItem aiAction (aiMenu.numItems() + 1)
 				local aiSubMenuItem = menuMan.createSubMenuItem "AI" aiMenu
 				theFileMenu.addItem aiSubMenuItem (theFileMenu.numItems() + 1)
 			)
@@ -820,6 +826,8 @@ fn fnAddNDBoxMenuItems =
 			-- “AI”二级菜单：第一项为 AIHUB 设置
 			local aiMenu = ndMenu.CreateSubMenu NDBox_CuiAiSubMenuGuid "AI"
 			aiMenu.CreateAction NDBox_CuiAiHubSettingsGuid macroScriptActionTableID "AIHubSettings`NDTools" title:"AIHUB 设置"
+			aiMenu.CreateAction NDBox_CuiMultiViewGuid macroScriptActionTableID "MultiViewSkeletonInference`NDTools" title:"多视图骨架推理"
+			aiMenu.CreateAction NDBox_CuiSkinTokensGuid macroScriptActionTableID "SkinTokensWeight`NDTools" title:"skintokens 权重"
 		)
 		callbacks.removeScripts id:#NDBoxMenuItems
 		callbacks.addScript #cuiRegisterMenus callbackNDBoxExtraMenu id:#NDBoxMenuItems
@@ -885,6 +893,28 @@ buttonText:"AI服务器设置"
 (
 	-- 固定路径：NDBox 插件目录
 	local f = "C:\\ProgramData\\Autodesk\\ApplicationPlugins\\NDToolsBox\\maxTools\\AIhub\\AIHub.ms"
+	if doesFileExist f then fileIn f else messageBox ("缺少文件: " + f) title:"NDTools"
+)
+
+--------------------多视图骨架推理
+macroScript MultiViewSkeletonInference
+category:"NDTools"
+internalcategory:"NDTools"
+tooltip:"多视图骨架推理"
+buttonText:"多视图骨架推理"
+(
+	local f = "C:\\ProgramData\\Autodesk\\ApplicationPlugins\\NDToolsBox\\maxTools\\multiview_tools\\multiview_tools.ms"
+	if doesFileExist f then fileIn f else messageBox ("缺少文件: " + f) title:"NDTools"
+)
+
+--------------------skintokens 权重
+macroScript SkinTokensWeight
+category:"NDTools"
+internalcategory:"NDTools"
+tooltip:"skintokens 权重"
+buttonText:"skintokens 权重"
+(
+	local f = "C:\\ProgramData\\Autodesk\\ApplicationPlugins\\NDToolsBox\\maxTools\\skintokenstools\\skintokenstools.ms"
 	if doesFileExist f then fileIn f else messageBox ("缺少文件: " + f) title:"NDTools"
 )
 
