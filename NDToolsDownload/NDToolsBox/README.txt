@@ -7,6 +7,6 @@ Entry 1: NDDownload.exe - Tencent cloud server only
 
 Entry 2: NDDownloadIn.exe - Company intranet server only
 
-Installer version: 0.48
+Installer version: 0.49
 Configuration: Release
-Built: 2026-11-04 15:25:48
+Built: 2026-11-19 11:11:56

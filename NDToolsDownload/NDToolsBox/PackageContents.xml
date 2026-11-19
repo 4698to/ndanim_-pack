@@ -13,13 +13,16 @@
     Author="Fujian TQ Digital, Inc."
     ProductCode="*"
     UpgradeCode="{901360F2-512A-49D6-84A8-A31B8223F60C}">
-
     <RuntimeRequirements OS="Win64" Platform="3ds Max" SeriesMin="2015" SeriesMax="2027" />
-
     <CompanyDetails Name="Fujian TQ Digital, Inc." Url="www.sundaybox.cc" Email="738746223@qq.com" />
-
-    <NDTOOLS>
-    </NDTOOLS>
+    <!-- <NDTOOLS>
+        <Components Description="pre-start-up scripts parts">
+            <RuntimeRequirements OS="Win64" Platform="3ds Max" SeriesMin="2015" SeriesMax="2015" />
+            <ComponentEntry ModuleName="./Max2015sp3_open_save.ms" />
+            <ComponentEntry ModuleName="./NDTools.ms" />
+            <ComponentEntry ModuleName="./save_loadSelectionSets.mse" />
+        </Components>
+    </NDTOOLS> -->
 
 </ApplicationPackage>
 
