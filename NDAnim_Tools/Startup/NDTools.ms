@@ -912,7 +912,7 @@ macroScript SkinTokensWeight
 category:"NDTools"
 internalcategory:"NDTools"
 tooltip:"skintokens 权重"
-buttonText:"skintokens 权重"
+buttonText:"模型骨架权重推理"
 (
 	local f = "C:\\ProgramData\\Autodesk\\ApplicationPlugins\\NDToolsBox\\maxTools\\skintokenstools\\skintokenstools.ms"
 	if doesFileExist f then fileIn f else messageBox ("缺少文件: " + f) title:"NDTools"
