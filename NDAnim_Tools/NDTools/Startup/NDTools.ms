@@ -748,6 +748,7 @@ global NDBox_CuiAiSubMenuGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E805"
 global NDBox_CuiAiHubSettingsGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E806"
 global NDBox_CuiMultiViewGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E807"
 global NDBox_CuiSkinTokensGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E808"
+global NDBox_CuiAiPoseGuid = "B1A82C3D-4E5F-6071-8293-A4B5C6D7E809"
 global NDBox_CuiMenusLoaded -- 仅声明，避免 filein 时重置导致反复 LoadConfiguration
 
 -- 创建菜单项（参考 BsKeyTools：高低版本分流，避免 UI 重载期间崩溃）
@@ -787,6 +788,8 @@ fn fnAddNDBoxMenuItems =
 				aiAction = menuMan.createActionItem "MultiViewSkeletonInference" "NDTools"
 				aiMenu.addItem aiAction (aiMenu.numItems() + 1)
 				aiAction = menuMan.createActionItem "SkinTokensWeight" "NDTools"
+				aiMenu.addItem aiAction (aiMenu.numItems() + 1)
+				aiAction = menuMan.createActionItem "AIPose" "NDTools"
 				aiMenu.addItem aiAction (aiMenu.numItems() + 1)
 				local aiSubMenuItem = menuMan.createSubMenuItem "AI" aiMenu
 				theFileMenu.addItem aiSubMenuItem (theFileMenu.numItems() + 1)
@@ -828,6 +831,7 @@ fn fnAddNDBoxMenuItems =
 			aiMenu.CreateAction NDBox_CuiAiHubSettingsGuid macroScriptActionTableID "AIHubSettings`NDTools" title:"AIHUB 设置"
 			aiMenu.CreateAction NDBox_CuiMultiViewGuid macroScriptActionTableID "MultiViewSkeletonInference`NDTools" title:"多视图骨架推理"
 			aiMenu.CreateAction NDBox_CuiSkinTokensGuid macroScriptActionTableID "SkinTokensWeight`NDTools" title:"skintokens 权重"
+			aiMenu.CreateAction NDBox_CuiAiPoseGuid macroScriptActionTableID "AIPose`NDTools" title:"AIPose"
 		)
 		callbacks.removeScripts id:#NDBoxMenuItems
 		callbacks.addScript #cuiRegisterMenus callbackNDBoxExtraMenu id:#NDBoxMenuItems
@@ -916,6 +920,28 @@ buttonText:"模型骨架权重推理"
 (
 	local f = "C:\\ProgramData\\Autodesk\\ApplicationPlugins\\NDToolsBox\\maxTools\\skintokenstools\\skintokenstools.ms"
 	if doesFileExist f then fileIn f else messageBox ("缺少文件: " + f) title:"NDTools"
+)
+
+--------------------AIPose
+macroScript AIPose
+category:"NDTools"
+internalcategory:"NDTools"
+tooltip:"AIPose 姿态提取"
+buttonText:"AIPose"
+(
+	local f = (getDir #scripts) + "\\ImagePosePlugin\\PoseExtractor.ms"
+	if doesFileExist f then (
+		fileIn f 
+	)
+	else (
+		local qgf=(getDir #scripts) + @"\QingGeTools\Modules\ImagePosePlugin\ImagePose.ms"
+		if doesFileExist qgf then (
+			fileIn qgf 
+		)
+		else (
+			messageBox ("缺少文件: " + f) title:"NDTools"
+		)
+	)
 )
 
 -- Max >= 27: cuiRegisterMenus（在 fnAddNDBoxMenuItems 内处理）
