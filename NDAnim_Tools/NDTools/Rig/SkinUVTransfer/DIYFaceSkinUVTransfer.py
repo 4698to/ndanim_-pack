@@ -307,6 +307,13 @@ def _skin_bones(skin):
     return result
 
 
+def _skin_vertex_count(skin):
+    try:
+        return int(rt.skinOps.GetNumberVertices(skin))
+    except Exception:
+        return None
+
+
 def _bone_limit(skin):
     for name in ("bone_Limit", "boneLimit"):
         try:
@@ -345,8 +352,9 @@ def _skin_vertex_weights(skin, vertex_index):
     return values
 
 
-def _collect(node, channel):
+def _collect(node, channel, progress=None):
     _require_max()
+    notify = progress if progress is not None else (lambda current, total: None)
     skin = _skin_modifier(node, activate=False)
     if skin is None:
         raise RuntimeError(u"导出模型必须已有 Skin 修改器。")
@@ -355,10 +363,24 @@ def _collect(node, channel):
         raise RuntimeError(u"节点“{}”没有 UV 通道 {}。".format(node.name, channel))
     vertex_count, face_count = _mesh_counts(node, kind)
     bones = _skin_bones(skin)
-    positions = [_world_position(node, kind, i) for i in range(vertex_count)]
-    weights = [_skin_vertex_weights(skin, i) for i in range(vertex_count)]
+    total_steps, done_steps = vertex_count * 2 + face_count, 0
+    positions = []
+    for i in range(vertex_count):
+        positions.append(_world_position(node, kind, i))
+        done_steps += 1
+        if done_steps % 64 == 0:
+            notify(done_steps, total_steps)
+    weights = []
+    for i in range(vertex_count):
+        weights.append(_skin_vertex_weights(skin, i))
+        done_steps += 1
+        if done_steps % 32 == 0:
+            notify(done_steps, total_steps)
     faces, face_uvs, materials = [], [], []
     for face_index in range(face_count):
+        done_steps += 1
+        if done_steps % 64 == 0:
+            notify(done_steps, total_steps)
         corners = _face_corners(node, kind, face_index)
         map_corners = _map_face(node, kind, channel, face_index)
         if len(corners) < 3 or len(map_corners) != len(corners):
@@ -464,24 +486,30 @@ def _reference(names, side_pair, groups, epsilon, rules, pose):
 
 
 def export_weights(node, file_path, uv_channel=1, mode="uv", side_pair=None,
-                   epsilon_side=0.001, naming_rules=None, pose=''):
+                   epsilon_side=0.001, naming_rules=None, pose='', progress=None):
     _require_max()
+    notify = progress if progress is not None else (lambda current, total: None)
     if not _valid_index(uv_channel) or uv_channel < 1:
         raise ValueError(u"UV 通道必须是正整数。")
     if not _valid_number(epsilon_side) or epsilon_side < 0 or not isinstance(pose, _STRING_TYPES):
         raise ValueError(u"参考带宽或姿态说明无效。")
     sem.parse_name('Head', naming_rules)
     if mode == "uv":
-        unused_skin, unused_kind, data = _collect(node, int(uv_channel))
+        unused_skin, unused_kind, data = _collect(node, int(uv_channel), progress=progress)
         reference = _reference(data['bones'], side_pair, _scene_name_groups(),
                                epsilon_side, naming_rules, pose)
         coords = [sem.side_coordinate(p, reference) for p in data['positions']]
         regions = []
-        for face in data['faces']:
+        # 接在采集阶段之后继续前进，避免进度条回跳。
+        collect_total = (int(data['source'].get('vertexCount', 0)) * 2
+                         + int(data['source'].get('faceCount', 0)))
+        for face_index, face in enumerate(data['faces']):
             sides = [sem.classify_side(coords[i], epsilon_side) for i in face]
             regions.append('Unknown' if 'Unknown' in sides else
                            ('Left' if all(s == 'Left' for s in sides) else
                             ('Right' if all(s == 'Right' for s in sides) else 'Mixed')))
+            if (face_index + 1) % 64 == 0:
+                notify(collect_total + face_index + 1, collect_total + len(data['faces']))
         data.update(version=3, boneSemantics=[sem.parse_name(n, naming_rules) for n in data['bones']],
                     sideReference=reference, vertexSideCoordinates=coords, faceRegions=regions,
                     sideNamingRules={'version': 1, 'rules': naming_rules or {}})
@@ -495,6 +523,8 @@ def export_weights(node, file_path, uv_channel=1, mode="uv", side_pair=None,
         entries = {}
         for index in range(vertex_count):
             entries[str(index)] = {bones[bone_id]: weight for bone_id, weight in _skin_vertex_weights(skin, index)}
+            if (index + 1) % 64 == 0:
+                notify(index + 1, vertex_count)
         data = {_text(node.name): entries}
     else:
         raise ValueError(u"未知导出模式：{}".format(mode))
@@ -834,7 +864,7 @@ def _normalize_weights(values, cap):
 def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method="uv",
                    flip_u=False, preview=False, side_pair=None, epsilon_side=0.001,
                    naming_rules=None, bone_mapping=None, disambiguation='side',
-                   use_material=False, pose='', tolerance=1e-5):
+                   use_material=False, pose='', tolerance=1e-5, progress=None):
     _require_max()
     if write_mode not in ('overwrite', 'unweighted', 'blend') or method not in ('uv', 'distance'):
         raise ValueError(u"写入模式或复制方式无效。")
@@ -849,6 +879,8 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
     explicit = {} if bone_mapping is None else bone_mapping
     sem.parse_name('Head', naming_rules)
     sem.map_bones([], [], explicit=explicit, target_rules=naming_rules)
+    notify = progress if progress is not None else (lambda current, total: None)
+    total_steps, done_steps = 1, 0
     with io.open(file_path, 'r', encoding='utf-8') as input_file:
         data = json.load(input_file)
     modern = _is_v2(data)
@@ -862,9 +894,9 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
             raise ValueError(u"材质备选已启用，但源文件没有 faceMaterialIds；请重新导出。")
     else:
         if method != 'uv':
-            raise ValueError(u"兼容格式没有位置，只能按顶点序号导入。")
+            raise ValueError(u"非UV的点序模式没有位置，只能按顶点序号导入。")
         if use_material:
-            raise ValueError(u"兼容格式不包含材质 ID。")
+            raise ValueError(u"非UV的点序模式不包含材质 ID。")
         entries = _legacy_entries(data)
         source_names = sorted(set(name for entry in entries for name in entry))
         source_rules, saved_bone_limit = {}, None
@@ -872,7 +904,7 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
     kind = _mesh_kind(node)
     vertex_count, face_count = _mesh_counts(node, kind)
     if not modern and len(entries) != vertex_count:
-        raise ValueError(u"兼容格式顶点数与目标不一致。")
+        raise ValueError(u"非UV的点序模式顶点数与目标不一致。")
     if modern and method == 'uv' and not _map_supported(node, kind, uv_channel):
         raise ValueError(u"目标模型没有 UV 通道 {}。".format(uv_channel))
     skin = _skin_modifier(node, activate=False)
@@ -913,6 +945,7 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
         samples = [set() for unused in range(vertex_count)]
         sides = [sem.classify_side(sem.side_coordinate(_world_position(node, kind, i), reference), epsilon_side)
                  if use_side else 'Unknown' for i in range(vertex_count)]
+        total_steps, done_steps = face_count + vertex_count * 2, 0
         for face_id in range(face_count):
             corners = _face_corners(node, kind, face_id)
             map_ids = _map_face(node, kind, uv_channel, face_id)
@@ -923,7 +956,13 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
                 uv = _map_vertex(node, kind, uv_channel, map_ids[corner])
                 uv = _flip_u(uv) if flip_u else uv
                 samples[vertex_id].add((tuple(uv), sides[vertex_id], material))
+            done_steps += 1
+            if done_steps % 64 == 0:
+                notify(done_steps, total_steps)
         for vertex_id, vertex_samples in enumerate(samples):
+            done_steps += 1
+            if done_steps % 64 == 0:
+                notify(done_steps, total_steps)
             values, reasons, lost = [], set(), 0.0
             if not vertex_samples:
                 reasons.add('no_uv')
@@ -956,7 +995,11 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
     elif modern:
         # 保留独立的最近源点距离算法。
         point_index = _build_point_index(data['positions'])
+        total_steps, done_steps = vertex_count * 2, 0
         for vertex_id in range(vertex_count):
+            done_steps += 1
+            if done_steps % 64 == 0:
+                notify(done_steps, total_steps)
             source_id = _nearest_source_vertex(point_index, _world_position(node, kind, vertex_id))
             if source_id is None:
                 report['no_uv'] += 1
@@ -972,11 +1015,15 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
                 results[vertex_id] = _normalize_weights(weights, cap)
     else:
         source_ids = {name: i for i, name in enumerate(source_names)}
+        total_steps, done_steps = vertex_count * 2, 0
         for vertex_id, entry in enumerate(entries):
+            done_steps += 1
+            if done_steps % 64 == 0:
+                notify(done_steps, total_steps)
             weights = {}
             for name, w in entry.items():
                 if not _valid_number(w) or w < 0:
-                    raise ValueError(u"兼容格式权重不是合法非负数值。")
+                    raise ValueError(u"非UV的点序模式权重不是合法非负数值。")
                 target = mapping.get(source_ids[name])
                 if target is None:
                     if w > 0:
@@ -990,6 +1037,9 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
     if skin is not None and write_mode in ('unweighted', 'blend'):
         existing_names = _skin_bones(skin)
         for vertex_id, incoming in list(results.items()):
+            done_steps += 1
+            if done_steps % 32 == 0:
+                notify(done_steps, total_steps)
             pairs = _skin_vertex_weights(skin, vertex_id)
             if write_mode == 'unweighted':
                 if sum(w for unused, w in pairs) > 1e-8:
@@ -1020,10 +1070,9 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
     required_ids = sorted(set(b for w in results.values() for b in w))
     for bone_id in required_ids:
         _unique_node(names[bone_id - 1], groups)
+    created_skin = skin is None
     redraw_disabled, hold_started = False, False
     try:
-        rt.disableSceneRedraw()
-        redraw_disabled = True
         rt.theHold.Begin()
         hold_started = True
         skin = _skin_modifier(node, create=True)
@@ -1033,6 +1082,17 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
             if name not in actual_names:
                 rt.skinOps.addBone(skin, _unique_node(name, groups), 0)
         actual_names = _skin_bones(skin)
+        if created_skin:
+            # 新 Skin 要先加骨骼才会建立顶点数据，加完后评估一次再校验顶点数。
+            rt.completeRedraw()
+            skin_count = _skin_vertex_count(skin)
+            if skin_count is not None and skin_count != vertex_count:
+                raise RuntimeError(
+                    u"已自动添加 Skin，但 Skin 顶点数 {} 与模型基础顶点数 {} 不一致："
+                    u"修改器栈里有改变顶点数的修改器。请先塌陷模型，或把 Skin 放到修改器栈第一位后再导入。".format(
+                        skin_count, vertex_count))
+        rt.disableSceneRedraw()
+        redraw_disabled = True
         remap = {}
         for bone_id in required_ids:
             name = names[bone_id - 1]
@@ -1042,6 +1102,9 @@ def import_weights(node, file_path, uv_channel=1, write_mode="overwrite", method
         if saved_bone_limit and not _set_bone_limit(skin, saved_bone_limit):
             raise RuntimeError(u"不能设置 Skin boneLimit，已撤销本次导入。")
         for vertex_id, weights in sorted(results.items()):
+            done_steps += 1
+            if done_steps % 32 == 0:
+                notify(done_steps, total_steps)
             ids = sorted(weights)
             rt.skinOps.ReplaceVertexWeights(skin, vertex_id + 1,
                                            rt.Array(*[remap[b] for b in ids]),
@@ -1145,11 +1208,17 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         QtWidgets.QDialog.__init__(self, parent)
         self.setWindowTitle(u"DIYFace UV 空间蒙皮权重复制")
-        self.resize(480, 300)
+        self.resize(520, 520)
         self.node = None
+        self._busy = False
+        self._last_progress = 0.0
         layout = QtWidgets.QVBoxLayout(self)
-        form = QtWidgets.QFormLayout()
-        layout.addLayout(form)
+        layout.setSpacing(6)
+
+        # 通用设置：导出与导入共用。
+        common_box = QtWidgets.QGroupBox(u"通用设置", self)
+        common_form = QtWidgets.QFormLayout(common_box)
+        layout.addWidget(common_box)
 
         node_row = QtWidgets.QHBoxLayout()
         self.node_label = QtWidgets.QLabel(u"未选择", self)
@@ -1157,16 +1226,12 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
         node_button.clicked.connect(self._pick_node)
         node_row.addWidget(self.node_label, 1)
         node_row.addWidget(node_button)
-        form.addRow(u"处理模型", node_row)
+        common_form.addRow(u"处理模型", node_row)
 
         self.channel = QtWidgets.QSpinBox(self)
         self.channel.setRange(1, 99)
         self.channel.setValue(1)
-        form.addRow(u"UV 通道", self.channel)
-        self.mode = QtWidgets.QComboBox(self)
-        self.mode.addItem(u"UV v3（跨拓扑/消歧）", "uv")
-        self.mode.addItem(u"兼容格式（按顶点序号）", "legacy")
-        form.addRow(u"导出模式", self.mode)
+        common_form.addRow(u"UV 通道", self.channel)
 
         path_row = QtWidgets.QHBoxLayout()
         self.path = QtWidgets.QLineEdit(self)
@@ -1177,41 +1242,8 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
         path_row.addWidget(self.path, 1)
         path_row.addWidget(open_button)
         path_row.addWidget(save_button)
-        form.addRow(u"权重文件", path_row)
+        common_form.addRow(u"权重文件", path_row)
 
-        self.write_mode = QtWidgets.QComboBox(self)
-        self.write_mode.addItem(u"覆盖", "overwrite")
-        self.write_mode.addItem(u"仅未加权", "unweighted")
-        self.write_mode.addItem(u"混合", "blend")
-        form.addRow(u"写入模式", self.write_mode)
-        self.association = QtWidgets.QComboBox(self)
-        self.association.addItem(u"UV 空间", "uv")
-        self.association.addItem(u"3D 距离（最近点）", "distance")
-        form.addRow(u"复制方式", self.association)
-        self.flip_u = QtWidgets.QCheckBox(u"目标 UV 水平翻转（U）", self)
-        self.flip_u.setToolTip(u"源模型与目标模型的 UV 左右镜像时勾选。")
-        self.disambiguation = QtWidgets.QComboBox(self)
-        self.disambiguation.addItem(u"骨骼左右 + 候选一致性", 'side')
-        self.disambiguation.addItem(u"仅候选一致性", 'consistency')
-        self.disambiguation.addItem(u"纯 UV 采样 + 骨骼名（逐字优先）", 'plain')
-        uv_row = QtWidgets.QHBoxLayout()
-        uv_row.addWidget(self.flip_u)
-        uv_row.addWidget(QtWidgets.QLabel(u"消歧", self))
-        uv_row.addWidget(self.disambiguation)
-        form.addRow(u"UV 镜像与消歧", uv_row)
-        self.material = QtWidgets.QCheckBox(u"启用材质 ID 备选（源/目标含义必须相同）", self)
-        self.material.setChecked(False)
-        form.addRow(u"材质分区", self.material)
-        pair_row = QtWidgets.QHBoxLayout()
-        parse_button = QtWidgets.QPushButton(u"骨骼解析预览", self)
-        parse_button.setToolTip(u"列出全部左右候选骨骼对；实际使用哪一对由消歧方式自动选择。")
-        parse_button.clicked.connect(self._parse_bones)
-        pair_row.addWidget(parse_button)
-        self.pair_label = QtWidgets.QLabel(u"参考对：未选择模型", self)
-        self.pair_label.setWordWrap(True)
-        pair_row.addWidget(self.pair_label, 1)
-        form.addRow(u"当前模型参考对", pair_row)
-        self.disambiguation.currentIndexChanged.connect(self._refresh_pair_label)
         self.left_marker = QtWidgets.QLineEdit(self)
         self.right_marker = QtWidgets.QLineEdit(self)
         self.left_marker.setText('_L_')
@@ -1224,25 +1256,88 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
         marker_row.addWidget(self.left_marker)
         marker_row.addWidget(QtWidgets.QLabel(u"右", self))
         marker_row.addWidget(self.right_marker)
-        form.addRow(u"骨骼命名镜像标识", marker_row)
+        common_form.addRow(u"骨骼命名镜像标识", marker_row)
         marker_help = QtWidgets.QLabel(u'导出设源模型标识；导入设目标模型标识，源规则自动读取。仅判别骨骼名称，不交换权重或镜像 U。', self)
         marker_help.setWordWrap(True)
-        form.addRow(marker_help)
+        common_form.addRow(marker_help)
         self.marker_error = QtWidgets.QLabel('', self)
         self.marker_error.setWordWrap(True)
-        form.addRow(self.marker_error)
+        common_form.addRow(self.marker_error)
 
+        # 导出设置。
+        export_box = QtWidgets.QGroupBox(u"导出设置", self)
+        export_form = QtWidgets.QFormLayout(export_box)
+        layout.addWidget(export_box)
+        self.mode = QtWidgets.QComboBox(self)
+        self.mode.addItem(u"UV v3（跨拓扑/消歧）", "uv")
+        self.mode.addItem(u"非UV的点序模式", "legacy")
+        self.mode.setToolTip(
+            u"UV v3：保存顶点位置、三角面 UV、材质 ID 与左右参考，可导入顶点数或顺序不同的模型，支持消歧；文件较大。\n"
+            u"非UV的点序模式：只按顶点序号记录权重，仅能导入顶点数与顺序完全相同的模型；文件较小，可给旧版工具读取。")
+        export_form.addRow(u"导出模式", self.mode)
+        mode_help = QtWidgets.QLabel(
+            u"UV v3：保留 UV/位置/材质信息，可跨拓扑导入，支持左右消歧。\n"
+            u"非UV的点序模式：仅按顶点序号记录权重，目标模型顶点数与顺序必须一致。", self)
+        mode_help.setWordWrap(True)
+        export_form.addRow(mode_help)
+
+        # 导入设置。
+        import_box = QtWidgets.QGroupBox(u"导入设置", self)
+        import_form = QtWidgets.QFormLayout(import_box)
+        layout.addWidget(import_box)
+        self.write_mode = QtWidgets.QComboBox(self)
+        self.write_mode.addItem(u"覆盖", "overwrite")
+        self.write_mode.addItem(u"仅未加权", "unweighted")
+        self.write_mode.addItem(u"混合", "blend")
+        import_form.addRow(u"写入模式", self.write_mode)
+        self.association = QtWidgets.QComboBox(self)
+        self.association.addItem(u"UV 空间", "uv")
+        self.association.addItem(u"3D 距离（最近点）", "distance")
+        import_form.addRow(u"复制方式", self.association)
+        self.flip_u = QtWidgets.QCheckBox(u"目标 UV 水平翻转（U）", self)
+        self.flip_u.setToolTip(u"源模型与目标模型的 UV 左右镜像时勾选。")
+        self.disambiguation = QtWidgets.QComboBox(self)
+        self.disambiguation.addItem(u"骨骼左右 + 候选一致性", 'side')
+        self.disambiguation.addItem(u"仅候选一致性", 'consistency')
+        self.disambiguation.addItem(u"纯 UV 采样 + 骨骼名（逐字优先）", 'plain')
+        uv_row = QtWidgets.QHBoxLayout()
+        uv_row.addWidget(self.flip_u)
+        uv_row.addWidget(QtWidgets.QLabel(u"消歧", self))
+        uv_row.addWidget(self.disambiguation)
+        import_form.addRow(u"UV 镜像与消歧", uv_row)
+        self.material = QtWidgets.QCheckBox(u"启用材质 ID 备选（源/目标含义必须相同）", self)
+        self.material.setChecked(False)
+        import_form.addRow(u"材质分区", self.material)
+        pair_row = QtWidgets.QHBoxLayout()
+        parse_button = QtWidgets.QPushButton(u"骨骼解析预览", self)
+        parse_button.setToolTip(u"列出全部左右候选骨骼对；实际使用哪一对由消歧方式自动选择。")
+        parse_button.clicked.connect(self._parse_bones)
+        pair_row.addWidget(parse_button)
+        self.pair_label = QtWidgets.QLabel(u"参考对：未选择模型", self)
+        self.pair_label.setWordWrap(True)
+        pair_row.addWidget(self.pair_label, 1)
+        import_form.addRow(u"当前模型参考对", pair_row)
+        self.disambiguation.currentIndexChanged.connect(self._refresh_pair_label)
+
+        layout.addStretch(1)
         buttons = QtWidgets.QHBoxLayout()
-        export_button = QtWidgets.QPushButton(u"导出权重", self)
-        import_button = QtWidgets.QPushButton(u"导入权重", self)
-        export_button.clicked.connect(self._export)
-        import_button.clicked.connect(lambda: self._import(False))
-        preview_button = QtWidgets.QPushButton(u"预览（不修改场景）", self)
-        preview_button.clicked.connect(lambda: self._import(True))
-        buttons.addWidget(preview_button)
-        buttons.addWidget(export_button)
-        buttons.addWidget(import_button)
+        self.preview_button = QtWidgets.QPushButton(u"预览（不修改场景）", self)
+        self.export_button = QtWidgets.QPushButton(u"导出权重", self)
+        self.import_button = QtWidgets.QPushButton(u"导入权重", self)
+        self.preview_button.clicked.connect(lambda: self._import(True))
+        self.export_button.clicked.connect(self._export)
+        self.import_button.clicked.connect(lambda: self._import(False))
+        buttons.addWidget(self.preview_button)
+        buttons.addWidget(self.export_button)
+        buttons.addWidget(self.import_button)
         layout.addLayout(buttons)
+
+        self.progress = QtWidgets.QProgressBar(self)
+        self.progress.setRange(0, 100)
+        self.progress.setValue(0)
+        self.progress.setFormat(u"%p%")
+        self.progress.hide()
+        layout.addWidget(self.progress)
         self.status = QtWidgets.QLabel(u"就绪。", self)
         self.status.setWordWrap(True)
         layout.addWidget(self.status)
@@ -1282,7 +1377,45 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
                 path += ".json"
             self.path.setText(path)
 
+    def _set_busy(self, busy):
+        self._busy = busy
+        for button in (self.preview_button, self.export_button, self.import_button):
+            button.setEnabled(not busy)
+        if busy:
+            self._last_progress = 0.0
+            self.progress.setRange(0, 100)
+            self.progress.setValue(0)
+            self.progress.show()
+        else:
+            self.progress.hide()
+            self.progress.setValue(0)
+
+    def _on_progress(self, current, total):
+        """进度回调：节流刷新进度条，只处理绘制，不接收用户输入，避免重入。"""
+        try:
+            total = max(1, int(total))
+            current = min(total, max(0, int(current)))
+            now = time.time()
+            if current < total and now - self._last_progress < 0.05:
+                return
+            self._last_progress = now
+            self.progress.setRange(0, total)
+            self.progress.setValue(current)
+            app = QtWidgets.QApplication.instance()
+            if app is not None:
+                loop = getattr(QtCore, 'QEventLoop', None)
+                flag = getattr(loop, 'ExcludeUserInputEvents', None) if loop is not None else None
+                if flag is not None:
+                    app.processEvents(flag)
+                else:
+                    app.processEvents()
+        except Exception:
+            pass
+
     def _export(self):
+        if self._busy:
+            return
+        self._set_busy(True)
         try:
             if self.node is None:
                 raise RuntimeError(u"请先选择处理模型。")
@@ -1294,12 +1427,16 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
             if not os.path.isdir(parent):
                 os.makedirs(parent)
             self.path.setText(path)
+            self.status.setText(u"正在导出…")
             result = export_weights(self.node, path, uv_channel=self.channel.value(),
-                                    mode=_combo_data(self.mode), **options)
+                                    mode=_combo_data(self.mode), progress=self._on_progress,
+                                    **options)
             self.status.setText(u"导出完成：{} 个顶点，模式 {}。".format(result["vertices"], result["mode"]))
         except Exception as exc:
             self.status.setText(_text(exc))
             QtWidgets.QMessageBox.critical(self, u"导出失败", _text(exc))
+        finally:
+            self._set_busy(False)
 
     def _current_names_rules(self):
         skin = _skin_modifier(self.node, activate=False) if self.node is not None else None
@@ -1410,6 +1547,9 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
         execute()
 
     def _import(self, preview=False):
+        if self._busy:
+            return
+        self._set_busy(True)
         try:
             if self.node is None:
                 raise RuntimeError(u"请先选择处理模型。")
@@ -1417,11 +1557,13 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
             if not path or not os.path.isfile(path):
                 raise RuntimeError(u"请指定有效的权重 JSON 文件。")
             options = self._reference_options()
+            self.status.setText(u"正在预览…" if preview else u"正在导入…")
             result = import_weights(self.node, path, uv_channel=self.channel.value(),
                                     write_mode=_combo_data(self.write_mode),
                                     method=_combo_data(self.association), flip_u=self.flip_u.isChecked(),
                                     preview=preview,
                                     disambiguation=_combo_data(self.disambiguation), use_material=self.material.isChecked(),
+                                    progress=self._on_progress,
                                     **options)
             message = u"{}：可写 {would_write}，实际写入 {written}，保留 {preserved}，UV 未覆盖 {no_uv}，歧义 {ambiguous}/{center_ambiguous}/{overlap_ambiguous}。".format(
                 u"预览（场景未修改）" if preview else u"完成", **result)
@@ -1435,6 +1577,8 @@ class SkinUVTransferDialog(QtWidgets.QDialog):
         except Exception as exc:
             self.status.setText(_text(exc))
             QtWidgets.QMessageBox.critical(self, u"预览失败" if preview else u"导入失败", _text(exc))
+        finally:
+            self._set_busy(False)
 
     def event(self, event):
         kind = event.type()
