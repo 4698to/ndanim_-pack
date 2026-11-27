@@ -644,8 +644,8 @@ icon:#("Security_Essentials",1)
 
 	callbacks.removescripts id:#PoseDisableFile
 	callbacks.removescripts id:#PoseDisableSave
-	callbacks.addscript #filePostOpen "CloseViewDisabled()" id:#PoseDisableFile
-	callbacks.addscript #filePreSave "CloseViewDisabled()" id:#PoseDisableSave
+	--callbacks.addscript #filePostOpen "CloseViewDisabled()" id:#PoseDisableFile
+	--callbacks.addscript #filePreSave "CloseViewDisabled()" id:#PoseDisableSave
 
 	fn PreOpenReset =
 	(
@@ -653,7 +653,7 @@ icon:#("Security_Essentials",1)
 	)
 
 	callbacks.removescripts id:#PreOpenReset
-	callbacks.addscript #filePreOpen "PreOpenReset()" id:#PreOpenReset
+	--callbacks.addscript #filePreOpen "PreOpenReset()" id:#PreOpenReset
 
 
 fn SRFindMenuItem theMenu theTitle = 
